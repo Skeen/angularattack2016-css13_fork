@@ -1,0 +1,7 @@
+<ul>
+    <li *ngFor="let song of songs; let i=index"
+        (dblclick)="changeSong(i)"
+        (click)="changeHighlight(i)">
+        <songa [song]="song"></songa>
+    </li>
+</ul>
