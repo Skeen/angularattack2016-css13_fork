@@ -71,7 +71,7 @@ export class AppComponent
                         + '">Download full file: '
                         + file.name + '</a>');
 
-            });
+            }.bind(this));
         this.pullOutMetadata(file, magnetURI);
     }
 
