@@ -2,12 +2,13 @@
 var gulp        = require('gulp-help')(require('gulp'));
 
 // Include build-tasks
-var server      = require('./build-tasks/server');
-var typescript  = require('./build-tasks/typescript');
-var clean       = require('./build-tasks/clean');
-var statics     = require('./build-tasks/statics');
 var browserify  = require('./build-tasks/browserify');
+var clean       = require('./build-tasks/clean');
+var server      = require('./build-tasks/server');
+var statics     = require('./build-tasks/statics');
 var surge       = require('./build-tasks/surge');
+var typescript  = require('./build-tasks/typescript');
+var uglify      = require('./build-tasks/uglify');
 
 // Sub-tasks
 gulp.task('server:reload', "Reload the attached browsers", server.reload);
@@ -23,6 +24,8 @@ gulp.task('browserify:bundle', false, browserify.bundle);
 gulp.task('browserify:compile', "Bundle js sources", ['typescript:compile'], browserify.compile);
 gulp.task('browserify:watch', ['typescript:watch'], browserify.watch);
 
+gulp.task('uglify:compress', ['browserify:compile'], uglify.compress);
+
 // Accumulative tasks
 gulp.task('compile', "Compile everything", [
     'statics:compile',
@@ -36,7 +39,8 @@ gulp.task('watch', false, [
     'browserify:watch'
 ]);
 
-gulp.task('deploy', "Deploy the project to Surge.sh", ['compile'], surge.deploy);
+gulp.task('predeploy', false, ['uglify:compress', 'statics:compile'], surge.clean);
+gulp.task('deploy', "Deploy the project to Surge.sh", ['predeploy'], surge.deploy);
 
 gulp.task('clean', "Cleans up the build environment", clean.clean);
 
