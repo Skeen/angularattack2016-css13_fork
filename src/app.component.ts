@@ -8,14 +8,11 @@ import {Playlist} from './playlist';
 
 var mm = require('musicmetadata')
 
-import {SongGUI} from './song';
-
 @Component({
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
         Player, Playlist
-        SongGUI
     ]
 })
 export class AppComponent
