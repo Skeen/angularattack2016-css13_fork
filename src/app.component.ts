@@ -4,6 +4,7 @@ import {ViewChild, ElementRef} from '@angular/core';
 import {TorrentClient, Song, createSong, Storage} from 'music-streamer-library';
 
 import {Player} from './player';
+import {Playlist} from './playlist';
 
 var mm = require('musicmetadata')
 
@@ -11,7 +12,7 @@ var mm = require('musicmetadata')
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
-        Player
+        Player, Playlist
     ]
 })
 export class AppComponent
@@ -20,6 +21,9 @@ export class AppComponent
 
     @ViewChild('player')
     private player_element : Player;
+
+    @ViewChild('playlist')
+    private playlist_element : Playlist;
 
     @ViewChild('log')
     private log_element : ElementRef;
@@ -53,6 +57,8 @@ export class AppComponent
             if (err) throw err;
 
             this.log(JSON.stringify(metadata, null, 4));
+
+            this.playlist_element.addSong(new Song("alfa"));
         }.bind(this));
     }
 
