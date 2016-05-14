@@ -4,12 +4,20 @@ import {Song} from 'music-streamer-library';
 
 // Current active song character U+23F5 || &#9205;
 
+import events = require('events');
+
+class Database extends events.EventEmitter {
+    constructor() {
+        super();
+        this.emit('ready');
+    }
+}
+
 @Component({
 	selector: 'playlist',
 	templateUrl:'playlist.html'
-
 })
-export class Playlist
+export class Playlist extends events.EventEmitter
 {
 	private songs:Song[] = [];
 	private name:string;
@@ -20,11 +28,14 @@ export class Playlist
 
     constructor()
     {
+        super();
+        this.emit('ready');
         this.addSong(new Song("alfa"));
     }
 
 	public addSong(song:Song): void
 	{
+        this.emit('addSong');
 		this.songs.push(song);
 	}
 
@@ -44,6 +55,7 @@ export class Playlist
 
 	public changeSong(index:number): void
 	{	
+        this.emit("changeSong");
 		var newSong = this.songs[index];
 		if(newSong)
 		{
