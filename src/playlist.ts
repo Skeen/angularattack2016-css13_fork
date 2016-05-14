@@ -16,15 +16,7 @@ class Database extends events.EventEmitter {
 
 @Component({
 	selector: 'playlist',
-	template:` 
-        <ul>
-            <li *ngFor="let song of songs; let i=index"
-                (dblclick)="changeSong(i)"
-                (click)="changeHighlight(i)">
-                <songa [song]="song"></songa>
-            </li>
-        </ul>
-        `,
+	templateUrl: 'playlist.html',
     directives: [
         Songa
     ]
@@ -42,8 +34,8 @@ export class Playlist extends events.EventEmitter
     {
         super();
         this.emit('ready');
-        this.addSong(new Song("alfa"));
-    }
+        this.addSong(new Song('13'));
+	}
 
 	public addSong(song:Song): void
 	{
@@ -92,15 +84,3 @@ export class Playlist extends events.EventEmitter
 		return this.currentSongIndex; 
 	}
 }
-/*
-// Sortable table classes
-export class Column
-{
-
-}
-
-export class Sorter
-{
-
-}
-*/
