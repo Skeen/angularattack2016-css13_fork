@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "gulp",
-    "deploy": "./node_modules/surge/lib/cli.js dist/",
+    "deploy": "gulp deploy",
     "postinstall": "typings install"
   },
   "license": "ISC",
@@ -32,11 +32,11 @@
     "gulp-clean": "^0.3.2",
     "gulp-help": "^1.6.1",
     "gulp-sourcemaps": "^1.6.0",
+    "gulp-surge": "^0.1.0",
     "gulp-typescript": "^2.13.4",
     "gulp-util": "^3.0.7",
     "lodash.assign": "^4.0.9",
     "merge2": "^1.0.2",
-    "surge": "^0.18.0",
     "typescript": "^1.8.10",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",

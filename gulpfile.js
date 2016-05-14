@@ -7,6 +7,7 @@ var typescript  = require('./build-tasks/typescript');
 var clean       = require('./build-tasks/clean');
 var statics     = require('./build-tasks/statics');
 var browserify  = require('./build-tasks/browserify');
+var surge       = require('./build-tasks/surge');
 
 // Sub-tasks
 gulp.task('server:reload', "Reload the attached browsers", server.reload);
@@ -34,6 +35,8 @@ gulp.task('watch', false, [
     'typescript:watch',
     'browserify:watch'
 ]);
+
+gulp.task('deploy', "Deploy the project to Surge.sh", ['compile'], surge.deploy);
 
 gulp.task('clean', "Cleans up the build environment", clean.clean);
 
