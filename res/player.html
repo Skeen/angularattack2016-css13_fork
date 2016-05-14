@@ -1,3 +1,6 @@
 <div>
-    <audio #media_player controls></audio>
+    <audio #media_player controls
+        (pause)="onPause()"
+        (ended)="songEnded()"
+    ></audio>
 </div>
