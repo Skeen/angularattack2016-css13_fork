@@ -1,2 +1,14 @@
 <h1>Streamy</h1>
 
+<form id='magnet' (ngSubmit)="onSubmit()">
+    <label for="torrentId">Download from a magnet link: </label>
+    <input type="text" 
+  [(ngModel)]="magnetURI" placeholder="magnet:" >
+    <button type="submit">Download</button>
+</form>
+
+<h2>Player</h2>
+<div #player></div>
+
+<h2>Log</h2>
+<div #log></div>
