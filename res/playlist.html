@@ -1,13 +1,15 @@
-<ul>
-	<li *ngFor="let song of songs; let i=index" 
-		(dblclick)="changeSong(i)" 
-		(click)="changeHighlight(i)">
-		<div *ngIf="(i == currentSongIndex())">
+<table>
+	<thead>
+		<tr>
 			
-		</div>
-		<div *ngIf="!(i == currentSongIndex())">
-
-		</div>
-	</li>
-</ul>
+		</tr>
+	</thead>
+	<tbody>
+		<tr *ngFor="let song of songs; let i=index" 
+			(dblclick)="changeSong(i)" 
+			(click)="changeHighlight(i)">
+			song
+		</tr>
+	</tbody>
+</table>
 

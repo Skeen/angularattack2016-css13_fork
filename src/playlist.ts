@@ -30,8 +30,7 @@ export class Playlist extends events.EventEmitter
     {
         super();
         this.emit('ready');
-        this.addSong(new Song("alfa"));
-    }
+	}
 
 	public addSong(song:Song): void
 	{
@@ -80,15 +79,3 @@ export class Playlist extends events.EventEmitter
 		return this.currentSongIndex; 
 	}
 }
-/*
-// Sortable table classes
-export class Column
-{
-
-}
-
-export class Sorter
-{
-
-}
-*/
