@@ -5,6 +5,7 @@ import {TorrentClient, Song, createSong} from 'music-streamer-library';
 
 import {Player} from './player';
 import {Playlist} from './playlist';
+import {Shuffler} from './shuffler';
 
 var mm = require('musicmetadata')
 
@@ -12,7 +13,7 @@ var mm = require('musicmetadata')
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
-        Player, Playlist
+        Player, Playlist, Shuffler
     ]
 })
 export class AppComponent
