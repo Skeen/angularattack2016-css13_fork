@@ -94,4 +94,12 @@ export class AppComponent
     constructor()
     {
     }
+
+    ngAfterViewInit()
+    {
+        this.playlist_element.on('changeSong', function()
+        {
+            alert("changed song!");
+        });
+    }
 }
