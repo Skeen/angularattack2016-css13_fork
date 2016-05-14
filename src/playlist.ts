@@ -1,25 +1,14 @@
 import {Component} from '@angular/core';
 
 import {Song} from 'music-streamer-library';
-import {Songa} from './songa';
 
 // Current active song character U+23F5 || &#9205;
 
 import events = require('events');
 
-class Database extends events.EventEmitter {
-    constructor() {
-        super();
-        this.emit('ready');
-    }
-}
-
 @Component({
 	selector: 'playlist',
-	templateUrl: 'playlist.html',
-    directives: [
-        Songa
-    ]
+	templateUrl: 'playlist.html'
 })
 export class Playlist extends events.EventEmitter
 {

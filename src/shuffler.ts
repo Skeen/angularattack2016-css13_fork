@@ -3,8 +3,7 @@ import events = require('events');
 
 @Component({
 	selector: 'shuffler',
-	templateUrl: 'shuffler.html',
-	styleUrls: ['../node_modules/font-awesome/css/font-awesome.css']
+	templateUrl: 'shuffler.html'
 })
 
 export class Shuffler
