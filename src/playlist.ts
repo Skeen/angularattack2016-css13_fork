@@ -8,14 +8,13 @@ import {Song} from 'music-streamer-library';
 	selector: 'playlist',
 	template:` 
         <ul>
-            <li *ngFor="let song of songs; let i=index" 
-                (dblclick)="changeSong(i)" 
+            <li *ngFor="let song of songs; let i=index"
+                (dblclick)="changeSong(i)"
                 (click)="changeHighlight(i)">
                 {{song.title}}
             </li>
         </ul>
         `
-
 })
 export class Playlist
 {
