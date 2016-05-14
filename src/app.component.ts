@@ -5,11 +5,14 @@ import * as msl from 'music-streamer-library';
 
 import {Home} from './home';
 
+import {SongGUI} from './song';
+
 @Component({
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
-        Home
+        Home,
+        SongGUI
     ]
 })
 export class AppComponent
