@@ -1,0 +1,13 @@
+<ul>
+	<li *ngFor="let song of songs; let i=index" 
+		(dblclick)="changeSong(i)" 
+		(click)="changeHighlight(i)">
+		<div *ngIf="(i == currentSongIndex())">
+			
+		</div>
+		<div *ngIf="!(i == currentSongIndex())">
+
+		</div>
+	</li>
+</ul>
+

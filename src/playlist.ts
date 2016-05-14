@@ -6,15 +6,7 @@ import {Song} from 'music-streamer-library';
 
 @Component({
 	selector: 'playlist',
-	template:` 
-        <ul>
-            <li *ngFor="let song of songs; let i=index" 
-                (dblclick)="changeSong(i)" 
-                (click)="changeHighlight(i)">
-                {{song.title}}
-            </li>
-        </ul>
-        `
+	templateUrl:'playlist.html'
 
 })
 export class Playlist
