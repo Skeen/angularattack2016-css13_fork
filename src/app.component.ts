@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
-import {TorrentClient, Song, createSong, Storage} from 'music-streamer-library';
+import {TorrentClient, Song, createSong} from 'music-streamer-library';
 
 import {Player} from './player';
 import {Playlist} from './playlist';
@@ -58,7 +58,30 @@ export class AppComponent
 
             this.log(JSON.stringify(metadata, null, 4));
 
-            this.playlist_element.addSong(new Song("alfa"));
+            var song: Song = createSong(metadata, magnetURI);
+            song.setFileName(file.name);
+
+            this.playlist_element.addSong(song);
+            /*
+            file.getBuffer(function(err: any, buffer: any)
+            {
+                if (err) throw err;
+
+                function toArrayBuffer(buffer: any)
+                {
+                    var ab = new ArrayBuffer(buffer.length);
+                    var view = new Uint8Array(ab);
+                    for (var i = 0; i < buffer.length; ++i) 
+                    {
+                        view[i] = buffer[i];
+                    }
+                    return ab;
+                }
+                song.setBlob(new Blob([toArrayBuffer(buffer)]));
+
+                // Save blob somewhere
+            });
+            */
         }.bind(this));
     }
 
