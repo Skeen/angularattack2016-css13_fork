@@ -1,7 +1,19 @@
-<ul>
-    <li *ngFor="let song of songs; let i=index"
-        (dblclick)="changeSong(i)"
-        (click)="changeHighlight(i)">
-        <songa [song]="song"></songa>
-    </li>
-</ul>
+<table class="">
+	<tbody>
+		<tr *ngFor="let song of songs; let i=index"
+	   	(dblclick)="changeSong(i)">
+			<div *ngIf="i == getSongIndex()">
+				<td></td>
+				<td>{{song.title}}</td>
+				<td>{{song.album}}</td>
+				<td>{{song.artists[0]}}</td>
+			</div>
+			<div *ngIf="i == getSongIndex()">
+				<td></td>
+				<td>{{song.title}}</td>
+				<td>{{song.album}}</td>
+				<td>{{song.artists[0]}}</td>
+			</div>
+   		</tr>
+	</tbody>
+</table>

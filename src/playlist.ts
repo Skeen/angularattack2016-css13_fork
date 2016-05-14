@@ -28,7 +28,6 @@ export class Playlist extends events.EventEmitter
 
 	private currentSong:Song;
 	private currentSongIndex:number;
-	private highlightedIndex:number;
 
     constructor()
     {
@@ -41,20 +40,6 @@ export class Playlist extends events.EventEmitter
 	{
         this.emit('addSong');
 		this.songs.push(song);
-	}
-
-	public changeHighlight(index:number): void
-	{
-		var newHighlightSong = this.songs[index];
-		if(newHighlightSong)
-		{
-			this.highlightedIndex = index;
-		}
-		else
-		{
-			// No song found at given index.
-			// TODO: error handling?
-		}
 	}
 
 	public changeSong(index:number): void
