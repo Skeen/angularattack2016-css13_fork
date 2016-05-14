@@ -1,10 +1,38 @@
-<div>
-	test
-	<i class="fa fa-random" aria-hidden="true"></i>
-</div>
-<!--
-<button *ngIf="shuffle" type="button"></button>
-<button *ngIf="!shuffle" type="button"><i class="fa fa-random" aria-hidden="true"></i></button>
-<button *ngIf="repeat" type="button"></button>
-<button *ngIf="!repeat" type="button"></button>
--->
+<button type="button">
+    <i class="fa fa-step-backward" aria-hidden="true"></i>
+</button>
+
+<button type="button"
+    (click)="flip_playing()"
+    >
+    <i aria-hidden="true"
+       [class.fa]="true"
+       [class.fa-play]="!playing"
+       [class.fa-stop]="playing"
+        ></i>
+</button>
+
+<button type="button">
+    <i class="fa fa-step-forward" aria-hidden="true"></i>
+</button>
+
+<button type="button"
+    (click)="flip_shuffle()"
+    >
+    <i class="fa fa-random" aria-hidden="true"
+        [class.pushed_in]="shuffle"
+        ></i>
+</button>
+<button type="button"
+    (click)="flip_repeat()"
+    >
+    <i class="fa fa-repeat" aria-hidden="true"
+        [class.pushed_in]="repeat"
+        ></i>
+</button>
+
+<style>
+.pushed_in {
+    color: green
+}
+</style>

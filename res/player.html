@@ -2,5 +2,9 @@
     <audio #media_player controls
         (pause)="onPause()"
         (ended)="songEnded()"
+        (repeat)="songRepeat"
+        (shuffle)="songShuffle"
+        (next)="songNext"
+        (previous)="songPrevious"
     ></audio>
 </div>

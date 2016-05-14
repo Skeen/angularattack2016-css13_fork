@@ -45,4 +45,24 @@ export class Player extends events.EventEmitter
     {
         this.emit('pause');
     }
+
+    songRepeat() : void
+    {
+        this.emit('song-repeat');
+    }
+
+    songShuffle() : void
+    {
+        this.emit('song-shuffle');
+    }
+
+    songNext() : void
+    {
+        this.emit('song-next');
+    }
+
+    songPrevious() : void
+    {
+        this.emit('song-previous');
+    }
 }

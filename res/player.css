@@ -1,0 +1,13 @@
+<style>
+#pButton{
+	height:60px; 
+	width: 60px;
+	border: none;
+	background-size: 50% 50%;
+	background-position: center;
+}
+.play{background: url('../images/play.png') no-repeat;}
+.pause{background: url('../images/pause.png') no-repeat;}
+</style>
+ 
+<button id="pButton" class="play" onclick="playAudio()"></button>
