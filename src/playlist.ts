@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 
 import {Song} from 'music-streamer-library';
+import {Songa} from './songa';
 
 // Current active song character U+23F5 || &#9205;
 
@@ -20,10 +21,13 @@ class Database extends events.EventEmitter {
             <li *ngFor="let song of songs; let i=index"
                 (dblclick)="changeSong(i)"
                 (click)="changeHighlight(i)">
-                {{song.title}}
+                <songa [song]="song"></songa>
             </li>
         </ul>
-        `
+        `,
+    directives: [
+        Songa
+    ]
 })
 export class Playlist extends events.EventEmitter
 {
