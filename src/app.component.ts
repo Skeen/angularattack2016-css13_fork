@@ -20,11 +20,11 @@ export class AppComponent {
     {
         this.log('<b>' + name + '</b>' +
                 '<ul>' +
-                '<li> hash: ' + info + '</li> ' +
-                '<li> <a href="' + magnet + '" target="_blank">[Magnet URI]</a></li>' +
-                '<li> <a href="' + blobURL + '" target="_blank" download="' + name + '.torrent">[Download .torrent]</a></li>' +
+                    '<li> hash: ' + info + '</li> ' +
+                    '<li> <a href="' + magnet + '" target="_blank">[Magnet URI]</a></li>' +
+                    '<li> <a href="' + blobURL + '" target="_blank" download="' + name + '.torrent">[Download .torrent]</a></li>' +
                 '</ul>'
-                , query);
+            , query);
     }
 
     handleMusicStream(file: any, magnetURI: string) : void
@@ -39,16 +39,11 @@ export class AppComponent {
     {
         var _this = this;
         // Get torrent magnet from text input field.
-        msl.TorrentClient.download_song(this.magnetURI, function(file:any, magnetURI:string)
-        {
-            _this.handleMusicStream(file, magnetURI);
-        }, function(str:any, query?:string)
-        {
-            _this.log(str, query);
-        }, null, function(name:string, info:string, magnet:string, blobURL:string, query?:string)
-        {
-            _this.torrent_to_html(name, info, magnet, blobURL, query);
-        });
+        msl.TorrentClient.download_song(this.magnetURI,
+            this.handleMusicStream.bind(this),
+            this.log.bind(this),
+            null,
+            this.torrent_to_html.bind(this));
     }
 
     @ViewChild('player') player_element : any;
