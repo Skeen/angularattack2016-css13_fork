@@ -3,9 +3,14 @@ import {ViewChild, ElementRef} from '@angular/core';
 
 import * as msl from 'music-streamer-library';
 
+import {Home} from './home';
+
 @Component({
     selector: 'my-app',
-    templateUrl: 'app.component.html'
+    templateUrl: 'app.component.html',
+    directives: [
+        Home
+    ]
 })
 export class AppComponent
 {
