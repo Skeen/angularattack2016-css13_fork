@@ -1,56 +1,47 @@
 import {Component} from '@angular/core';
+
 import {Song} from 'music-streamer-library';
 
 // Current active song character U+23F5 || &#9205;
 
-@Component(
-{
+@Component({
 	selector: 'playlist',
 	template:` 
-		<ul>
-			<li *ngFor="#song of songs; #i=index" 
-					(dblclick)="changeSong(i)" 
-					(click)="changeHighlight(i)">
-				<div *ngIf="(i == getSongIndex()">
-	
-				</div>
-				<div *ngIf="!(i == getSongIndex())">
-					
-				</div>
-			</li>
-		</ul>
-		`
+        <ul>
+            <li *ngFor="let song of songs; let i=index" 
+                (dblclick)="changeSong(i)" 
+                (click)="changeHighlight(i)">
+                {{song.title}}
+            </li>
+        </ul>
+        `
+
 })
 export class Playlist
 {
-	private songs:Song[];
-	private playlistName;
+	private songs:Song[] = [];
+	private name:string;
 
 	private currentSong:Song;
 	private currentSongIndex:number;
 	private highlightedIndex:number;
 
-	constructor();
-	constructor(name:string);
-	constructor(name?:string)
-	{
-		if(name)
-			this.name = name;
-		else
-			this.name = "new";
-	}
+    constructor()
+    {
+        this.addSong(new Song("alfa"));
+    }
 
 	public addSong(song:Song): void
 	{
-		songs.push(song);
+		this.songs.push(song);
 	}
 
 	public changeHighlight(index:number): void
 	{
-		var newHighlightSong = songs[index];
+		var newHighlightSong = this.songs[index];
 		if(newHighlightSong)
 		{
-			highlightedIndex = index;
+			this.highlightedIndex = index;
 		}
 		else
 		{
@@ -61,12 +52,12 @@ export class Playlist
 
 	public changeSong(index:number): void
 	{	
-		var newSong = songs[index];
+		var newSong = this.songs[index];
 		if(newSong)
 		{
 			// Song was found at the provided index, changing to use that.
-			currentSongIndex = index;
-			currentSong = newSong;
+			this.currentSongIndex = index;
+			this.currentSong = newSong;
 		}
 		else
 		{	
@@ -77,15 +68,15 @@ export class Playlist
 
 	public getSong(): Song
 	{
-		return currentSong;
+		return this.currentSong;
 	}
 
 	public getSongIndex(): number
 	{
-		return currentSongIndex; 
+		return this.currentSongIndex; 
 	}
 }
-
+/*
 // Sortable table classes
 export class Column
 {
@@ -96,5 +87,4 @@ export class Sorter
 {
 
 }
-
-
+*/
