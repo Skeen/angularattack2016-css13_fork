@@ -1,24 +1,23 @@
 import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
-import * as msl from 'music-streamer-library';
+import {TorrentClient} from 'music-streamer-library';
 
-import {Home} from './home';
+import {Player} from './player';
 
 @Component({
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
-        Home
+        Player
     ]
 })
 export class AppComponent
 {
-    // TODO: Default to some music file
-    private magnetURI : string = "magnet:?xt=urn:btih:6a9759bffd5c0af65319979fb7832189f4f3c35d&dn=sintel.mp4&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=wss%3A%2F%2Ftracker.webtorrent.io&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel-1024-surround.mp4"
+    private magnetURI : string = "magnet:?xt=urn:btih:2f44f0e4edeeeb78084f582e1f29e2b4573e62fe&dn=incompetech-royalty_free-pixelland.mp3&tr=udp%3A%2F%2Fexodus.desync.com%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=wss%3A%2F%2Ftracker.webtorrent.io";
 
     @ViewChild('player')
-    private player_element : ElementRef;
+    private player_element : Player;
 
     @ViewChild('log')
     private log_element : ElementRef;
@@ -43,13 +42,13 @@ export class AppComponent
 
     private handleMusicStream(file: any, magnetURI: string) : void
     {
-        file.appendTo(this.player_element.nativeElement);
+        this.player_element.playSong(file);
     }
 
     private onSubmit() : void
     {
         // Get torrent magnet from text input field.
-        msl.TorrentClient.download_song(this.magnetURI,
+        TorrentClient.download_song(this.magnetURI,
             this.handleMusicStream.bind(this),
             this.log.bind(this),
             null,
