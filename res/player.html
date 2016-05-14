@@ -1,10 +1,78 @@
 <div>
-    <audio #media_player controls
+    <audio #media_player
+        (playing)="onPlay()"
         (pause)="onPause()"
-        (ended)="songEnded()"
-        (repeat)="songRepeat"
-        (shuffle)="songShuffle"
-        (next)="songNext"
-        (previous)="songPrevious"
+        (ended)="onEnded()"
+
+        (seeked)="updateTime()"
+        (timeupdate)="updateTime()"
+        (canplaythrough)="updateDuration()"
+        (durationchange)="updateDuration()"
+        (volumechange)="updateVolume()"
     ></audio>
+
+<button type="button"
+    (click)="songPrevious()"
+    >
+    <i class="fa fa-step-backward" aria-hidden="true"></i>
+</button>
+
+<button type="button"
+    (click)="flip_playing()"
+    >
+    <i aria-hidden="true"
+       [class.fa]="true"
+       [class.fa-play]="!playing"
+       [class.fa-stop]="playing"
+        ></i>
+</button>
+
+<button type="button"
+    (click)="songNext()"
+    >
+    <i class="fa fa-step-forward" aria-hidden="true"></i>
+</button>
+
+<button type="button"
+    (click)="flip_shuffle()"
+    >
+    <i class="fa fa-random" aria-hidden="true"
+        [class.pushed_in]="shuffle"
+        ></i>
+</button>
+<button type="button"
+    (click)="flip_repeat()"
+    >
+    <i class="fa fa-repeat" aria-hidden="true"
+        [class.pushed_in]="repeat"
+        ></i>
+</button>
+
+<button type="button"
+    (click)="mute()"
+    >
+    <i aria-hidden="true"
+       [class.fa]="true"
+       [class.fa-volume-off]="muted"
+       [class.fa-volume-down]="!muted && volume < 0.5"
+       [class.fa-volume-up]="!muted && volume > 0.5"
+        ></i>
+</button>
+
+
+<input type="range" [value]=1 [max]="1" [step]="0.01"
+    (input)="setVolume($event)"
+/>
+
+<progressbar [value]="value" [max]="max"
+    (click)="playAhead($event)"
+>
+</progressbar>
+<span style="color:black; white-space:nowrap;">{{value | number:'.1-1'}} / {{max | number:'.1-1'}}</span>
+
+<style>
+.pushed_in {
+    color: green
+}
+</style>
 </div>
