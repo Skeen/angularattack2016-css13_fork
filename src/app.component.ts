@@ -1,9 +1,11 @@
 import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
-import {TorrentClient} from 'music-streamer-library';
+import {TorrentClient, Song, createSong, Storage} from 'music-streamer-library';
 
 import {Player} from './player';
+
+var mm = require('musicmetadata')
 
 @Component({
     selector: 'my-app',
@@ -38,11 +40,39 @@ export class AppComponent
                     '<li> <a href="' + blobURL + '" target="_blank" download="' + name + '.torrent">[Download .torrent]</a></li>' +
                 '</ul>'
             , query);
+        this.log('(Blob URLs only work if the file is loaded from a server.'
+            + '"http//localhost" works.'
+            + '"file://" does not.)');
+    }
+
+    private pullOutMetadata(file: any, magnetURI: string) : void
+    {
+        var stream = file.createReadStream();
+        var parser = mm(stream, function(err: any, metadata: any)
+        {
+            if (err) throw err;
+
+            this.log(JSON.stringify(metadata, null, 4));
+        }.bind(this));
     }
 
     private handleMusicStream(file: any, magnetURI: string) : void
     {
         this.player_element.playSong(file);
+        // Add download URL to log
+        file.getBlobURL(
+            function(err: any, url: any)
+            {
+                if (err) {
+                    return this.log(err.message);
+                }
+                this.log('File done.');
+                this.log('<a href="' + url
+                        + '">Download full file: '
+                        + file.name + '</a>');
+
+            });
+        this.pullOutMetadata(file, magnetURI);
     }
 
     private onSubmit() : void
