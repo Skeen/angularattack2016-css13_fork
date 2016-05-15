@@ -31,17 +31,8 @@ export class AppComponent
     @ViewChild('playlist')
     private playlist_element : Playlist;
 
-    @ViewChild('log')
-    private log_element : ElementRef;
-
+    // List of downloads
     private downloads : any = [];
-
-    private log(str: any, query?: string) : void
-    {
-        var p = document.createElement('p');
-        p.innerHTML = str;
-        this.log_element.nativeElement.appendChild(p);
-    }
 
     private add_to_playlist(download:any)
     {
@@ -109,7 +100,7 @@ export class AppComponent
             function(err: any, url: any)
             {
                 if (err) {
-                    return this.log(err.message);
+                    alert(err.message);
                 }
                 this.torrent_progress(download, 0, 1, 0);
                 download.file_blobURL = url;
