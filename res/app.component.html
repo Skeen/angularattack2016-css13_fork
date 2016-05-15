@@ -1,47 +1,87 @@
-<h1>Streamy</h1>
+<div id="wrapper">
+<nav>
+    <p><player #player></player></p>
+</nav>
+<div id="dummy"></div>
+<div id="content">
+    <h1>Streamy</h1>
 
-<form id='magnet' (ngSubmit)="onSubmit()">
-    <label for="torrentId">Download from a magnet link: </label>
-    <input type="text" 
-  [(ngModel)]="magnetURI" placeholder="magnet:" >
-    <button type="submit">Download</button>
-</form>
+    <form id='magnet' (ngSubmit)="onSubmit()">
+        <label for="torrentId">Download from a magnet link: </label>
+        <input type="text" 
+      [(ngModel)]="magnetURI" placeholder="magnet:" >
+        <button type="submit">Download</button>
+    </form>
 
-<h2>Player</h2>
-<player #player></player>
+    <h2>Playlist</h2>
+    <playlist #playlist></playlist>
 
-<h2>Playlist</h2>
-<playlist #playlist></playlist>
+    <h2>Downloads</h2>
+    <ul>
+        <li *ngFor="let dl of downloads">
+            <b>{{dl.name}}</b>
+            <ul>
+                <li> Hash: {{dl.info}} </li>
+                <li> <a [href]="dl.magnetURI" target="_blank">[Magnet URI]</a></li>
+                <li> <a [href]="dl.blobURL" target="_blank" download="{{dl.name}}.torrent">[Download .torrent]</a></li>
+                <li *ngIf="dl.file_blobURL != undefined"> Download full file: <a [href]="dl.file_blobURL" target="_blank" download="{{dl.name}}">{{dl.name}}</a></li>
+                <li> Progress: {{dl.progress*100 | number:'.1-1'}} % </li>
+                <li> Speed: {{dl.download_speed/1000 | number:'.1-1'}} kB/sec </li>
+                <li> Timeleft: {{dl.time_left/1000 | number:'.1-1'}} sec </li>
+                <li> Add to playlist: 
+                    <button type="button"
+                            [disabled]="dl.song == undefined"
+                            (click)="add_to_playlist(dl)"
+                            >
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                    </button>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    '(Blob URLs only work if the file is loaded from a server.
+        "http//localhost" works.
+        "file://" does not.)
 
-<h2>Downloads</h2>
-<ul>
-    <li *ngFor="let dl of downloads">
-        <b>{{dl.name}}</b>
-        <ul>
-            <li> Hash: {{dl.info}} </li>
-            <li> <a [href]="dl.magnetURI" target="_blank">[Magnet URI]</a></li>
-            <li> <a [href]="dl.blobURL" target="_blank" download="{{dl.name}}.torrent">[Download .torrent]</a></li>
-            <li *ngIf="dl.file_blobURL != undefined"> Download full file: <a [href]="dl.file_blobURL" target="_blank" download="{{dl.name}}">{{dl.name}}</a></li>
-            <li> Progress: {{dl.progress*100 | number:'.1-1'}} % </li>
-            <li> Speed: {{dl.download_speed/1000 | number:'.1-1'}} kB/sec </li>
-            <li> Timeleft: {{dl.time_left/1000 | number:'.1-1'}} sec </li>
-            <li> Add to playlist: 
-                <button type="button"
-                        [disabled]="dl.song == undefined"
-                        (click)="add_to_playlist(dl)"
-                        >
-                        <i class="fa fa-plus" aria-hidden="true"></i>
-                </button>
-            </li>
-        </ul>
-    </li>
-</ul>
-'(Blob URLs only work if the file is loaded from a server.
-    "http//localhost" works.
-    "file://" does not.)
+    <h2>Search</h2>
+    <search></search>
 
-<h2>Search</h2>
-<search></search>
+    <h2>Log</h2>
+    <div #log></div>
+</div>
+</div>
 
-<h2>Log</h2>
-<div #log></div>
+<style>
+#wrapper {
+    width:940px;
+    margin: 0 auto;
+}
+
+header {
+    text-align:center;
+    padding:70px 0;
+}
+
+#dummy {
+    height :50px;
+}
+
+nav {
+    background: ##A9A9A9;
+    height: 40px;
+    width: 660px;
+    margin-left: -10px;
+    line-height:50px;
+    position: fixed;
+}
+
+#content {
+    background: #fff;
+    height: 1500px; /* presetting the height */
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.fixed {
+      position:fixed;
+}
+</style>
