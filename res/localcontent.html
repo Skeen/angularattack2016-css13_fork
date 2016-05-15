@@ -1,0 +1,12 @@
+<div class="container-fluid">
+	<div class="row" *ngFor="let song of songs; let i=index"
+	  				(dblclick)="changeSong(i)">
+		<div class="col-md-1">
+			<i *ngIf="i == getSongIndex()" class="fa fa-angle-right" aria-hidden="true"></i>
+			<i *ngIf="i == getChangeSongIndex()" class="fa fa-circle-o-notch fa-spin fa-fw" aria-hidden="true"></i>
+		</div>
+		<div class="col-ms-3">{{song.title}}</div>
+		<div class="col-ms-3">{{song.albumName}}</div>
+		<div class="col-ms-3">{{song.artistNames[0]}}</div>	
+	</div>
+</div>

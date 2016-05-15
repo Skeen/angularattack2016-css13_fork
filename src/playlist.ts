@@ -10,14 +10,14 @@ import events = require('events');
 
 export class Playlist extends events.EventEmitter
 {
-	private songs:Song[] = [];
-	private name:string = "New Playlist";
+	protected songs:Song[] = [];
+	protected name:string = "New Playlist";
 
-	private currentSong:Song;
-	private currentSongIndex:number;
-	private currentAlbum : Album;
-	private currentArtists : Artist[];
-    private changeSongIndex:number;
+	protected currentSong:Song;
+	protected currentSongIndex:number;
+	protected currentAlbum : Album;
+	protected currentArtists : Artist[];
+    protected changeSongIndex:number;
 
 	private dht: HashTable;
 
@@ -25,6 +25,11 @@ export class Playlist extends events.EventEmitter
     {
         super();
 		this.emit('ready');
+	}
+
+	protected setSongs(songs:Song[]):void
+	{
+		this.songs = songs;
 	}
 
 	public setName(name:string): void
