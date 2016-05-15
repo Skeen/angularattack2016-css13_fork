@@ -118,7 +118,7 @@ export class AppComponent
 
     constructor()
     {
-        this.dht = new HTTP_HashTable();
+        this.dht = new HTTP_HashTable("http://46.101.162.151:3000/");
     }
 
     ngAfterViewInit()
