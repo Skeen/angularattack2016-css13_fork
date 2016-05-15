@@ -58,6 +58,53 @@ export class Playlist extends events.EventEmitter
 		this.emit("changedSong");
 	}
 
+    public randomSong(): void
+    {
+        var nextSongIndex = Math.floor(Math.random() * (this.songs.length-1)) + 0 
+        this.changeSong(nextSongIndex);
+    }
+
+    public sameSong(): void
+    {
+        this.changeSong(this.currentSongIndex);
+    }
+
+    public nextSong(repeat_list:boolean): void
+    {
+        var nextSongIndex = this.currentSongIndex + 1;
+        if(nextSongIndex >= this.songs.length)
+        {
+            if(repeat_list)
+            {
+                nextSongIndex = 0;
+            }
+            else
+            {
+                // TODO: Output ng2-bootstrap alert
+                console.log("No more songs!");
+                return;
+            }
+        }
+        this.changeSong(nextSongIndex);
+    }
+
+    public prevSong(repeat_list:boolean): void
+    {
+        var nextSongIndex = this.currentSongIndex - 1;
+        if(nextSongIndex < 0)
+        {
+            if(repeat_list)
+            {
+                nextSongIndex = this.songs.length - 1;
+            }
+            else
+            {
+                nextSongIndex = 0;
+            }
+        }
+        this.changeSong(nextSongIndex);
+    }
+
 	public getSong(): Song
 	{
 		return this.currentSong;

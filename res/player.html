@@ -12,7 +12,7 @@
     ></audio>
 <div id="controls">
     <button type="button"
-        (click)="songPrevious()"
+        (click)="prevSong()"
         >
         <i class="fa fa-step-backward" aria-hidden="true"></i>
     </button>
@@ -28,7 +28,7 @@
     </button>
 
     <button type="button"
-        (click)="songNext()"
+        (click)="nextSong()"
         >
         <i class="fa fa-step-forward" aria-hidden="true"></i>
     </button>
@@ -60,10 +60,12 @@
             ></i>
     </button>
     <button type="button"
-        (click)="flip_repeat()"
+        (click)="push_repeat()"
         >
-        <i class="fa fa-repeat" aria-hidden="true"
-            [class.pushed_in]="repeat"
+        <i class="fa" aria-hidden="true"
+            [class.pushed_in]="repeat != 0"
+            [class.fa-repeat]="repeat <= 1"
+            [class.fa-undo]="repeat == 2"
             ></i>
     </button>
 

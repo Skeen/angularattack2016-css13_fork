@@ -153,5 +153,49 @@ export class AppComponent
                 this.playlist_element.setActive(index);
             }.bind(this));
         }.bind(this));
+
+        this.player_element.on('nextSong', function()
+        {
+            if(this.player_element.getShuffle())
+            {
+                this.playlist_element.randomSong();
+            }
+            else
+            {
+                var repeat_all = this.player_element.getRepeatAll();
+                this.playlist_element.nextSong(repeat_all);
+            }
+        }.bind(this));
+
+        this.player_element.on('prevSong', function()
+        {
+            if(this.player_element.getShuffle())
+            {
+                this.playlist_element.randomSong();
+            }
+            else
+            {
+                var repeat_all = this.player_element.getRepeatAll();
+                this.playlist_element.prevSong(repeat_all);
+            }
+        }.bind(this));
+
+        this.player_element.on('song-ended', function()
+        {
+            var repeat = this.player_element.getRepeat();
+            if(repeat)
+            {
+                this.playlist_element.sameSong();
+            }
+            else if(this.player_element.getShuffle())
+            {
+                this.playlist_element.randomSong();
+            }
+            else
+            {
+                var repeat_all = this.player_element.getRepeatAll();
+                this.playlist_element.nextSong(repeat_all);
+            }
+        }.bind(this));
     }
 }
