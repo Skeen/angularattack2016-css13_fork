@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
 import {TorrentClient, Song, Storage, createSong} from 'music-streamer-library';
+import {HashTable, HTTP_HashTable} from 'music-streamer-library';
 
 import {Player} from './player';
 import {Playlist} from './playlist';
@@ -30,6 +31,8 @@ export class AppComponent
 
     @ViewChild('playlist')
     private playlist_element : Playlist;
+
+    private dht : HashTable;
 
     // List of downloads
     private downloads : any = [];
@@ -146,6 +149,8 @@ export class AppComponent
 
     constructor()
     {
+        this.dht = new HTTP_HashTable();
+
         // Seed all local content
         Storage.getKeys(function(err: any, keys: string[])
         {

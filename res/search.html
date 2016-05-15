@@ -1,3 +1,16 @@
 <form>
-	<input type="search" [(ngModel)]="searchInput" (keyup)="searchFor()"/>
+    <input [(ngModel)]="searchInput"
+           [typeahead]="getAsyncData(getContext())"
+           (typeaheadLoading)="changeTypeaheadLoading($event)"
+           (typeaheadNoResults)="changeTypeaheadNoResults($event)"
+           (typeaheadOnSelect)="typeaheadOnSelect($event)"
+           [typeaheadOptionsLimit]="5"
+           placeholder="Locations loaded with timeout"
+           class="form-control">
+    <div *ngIf="typeaheadLoading===true">
+        <i class="glyphicon glyphicon-refresh ng-hide" style=""></i>
+    </div>
+    <div *ngIf="typeaheadNoResults===true" class="" style="">
+        <i class="glyphicon glyphicon-remove"></i> No Results Found
+    </div>
 </form>
