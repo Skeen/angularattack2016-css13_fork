@@ -5,6 +5,7 @@ import events = require('events');
 @Component({
 	selector: 'search',
 	templateUrl: 'search.html'
+	styleUrls: ['search.css']
 })
 
 export class Search extends events.EventEmitter

@@ -1,119 +1,87 @@
-<div>
-    <audio #media_player
-        (playing)="onPlay()"
-        (pause)="onPause()"
-        (ended)="onEnded()"
-
-        (seeked)="updateTime()"
-        (timeupdate)="updateTime()"
-        (canplaythrough)="updateDuration()"
-        (durationchange)="updateDuration()"
-        (volumechange)="updateVolume()"
-    ></audio>
-<div id="controls">
+<audio #media_player
+  (playing)="onPlay()"
+  (pause)="onPause()"
+  (ended)="onEnded()"
+  (seeked)="updateTime()"
+  (timeupdate)="updateTime()"
+  (canplaythrough)="updateDuration()"
+  (durationchange)="updateDuration()"
+  (volumechange)="updateVolume()"
+></audio>
+<div class="col-md-2">
+  <div id="previous" class="col-md-4">
     <button type="button"
-        (click)="songPrevious()"
-        >
-        <i class="fa fa-step-backward" aria-hidden="true"></i>
+      (click)="songPrevious()"
+    >
+    <i class="fa fa-step-backward fa-lg" aria-hidden="true"></i>
     </button>
-
+  </div>
+  <div id="button" class="col-md-4">
     <button type="button"
-        (click)="flip_playing()"
-        >
-        <i aria-hidden="true"
-           [class.fa]="true"
-           [class.fa-play]="!playing"
-           [class.fa-stop]="playing"
-            ></i>
+      (click)="flip_playing()"
+      >
+      <i aria-hidden="true"
+       [class.fa]="true"
+       [class.fa-play]="!playing"
+       [class.fa-stop]="playing"
+       [class.fa-lg]="true"
+      ></i>
     </button>
-
+  </div>
+  <div id="button" class="col-md-4">
     <button type="button"
-        (click)="songNext()"
-        >
-        <i class="fa fa-step-forward" aria-hidden="true"></i>
+      (click)="songNext()"
+      >
+      <i class="fa fa-step-forward fa-lg" aria-hidden="true"></i>
     </button>
+  </div>
 </div>
-<div id="progress">
-    <div id="currtime">
-        <span style="color:black; white-space:nowrap;">{{value | number:'.1-1'}}</span>
-    </div>
-    <div id="progressbar">
-        <progressbar [value]="value" [max]="max"
-            (click)="playAhead($event)"
-        >
-        </progressbar>
-    </div>
-    <div id="endtime">
-        <span style="color:black; white-space:nowrap;">{{max | number:'.1-1'}}</span>
-    </div>
+<div id="button" class="col-md-1">
+  <span style="color:black; white-space:nowrap;">{{value | number:'.1-1'}}</span>
 </div>
-<div id="volume">
-    <input type="range" [value]=1 [max]="1" [step]="0.01"
+<div id="progress" class="col-md-2">
+  <progressbar [value]="value" [max]="max"
+    (click)="playAhead($event)"
+    >
+  </progressbar>
+</div>
+<div id="button" class="col-md-1">
+  <span style="color:black; white-space:nowrap;">{{max | number:'.1-1'}}</span>
+</div>
+<div id="volume" class="col-md-1">
+  <input type="range" [value]=1 [max]="1" [step]="0.01"
     (input)="setVolume($event)"/>
 </div>
-<div id="secondarycontrols">
+<div class="col-md-2">
+  <div id="button" class="col-md-4">
     <button type="button"
-        (click)="flip_shuffle()"
-        >
-        <i class="fa fa-random" aria-hidden="true"
-            [class.pushed_in]="shuffle"
-            ></i>
+      (click)="flip_shuffle()"
+      >
+      <i class="fa fa-random fa-lg" aria-hidden="true"
+        [class.pushed_in]="shuffle"
+      ></i>
     </button>
+  </div>
+  <div id="button" class="col-md-4">
     <button type="button"
-        (click)="flip_repeat()"
-        >
-        <i class="fa fa-repeat" aria-hidden="true"
-            [class.pushed_in]="repeat"
-            ></i>
+      (click)="flip_repeat()"
+      >
+      <i class="fa fa-repeat fa-lg" aria-hidden="true"
+        [class.pushed_in]="repeat"
+      ></i>
     </button>
-
+  </div>
+  <div id="button" class="col-md-4">
     <button type="button"
-        (click)="mute()"
-        >
-        <i aria-hidden="true"
-           [class.fa]="true"
-           [class.fa-volume-off]="muted"
-           [class.fa-volume-down]="!muted && volume < 0.5"
-           [class.fa-volume-up]="!muted && volume > 0.5"
-            ></i>
+      (click)="mute()"
+      >
+      <i aria-hidden="true"
+       [class.fa]="true"
+       [class.fa-volume-off]="muted"
+       [class.fa-volume-down]="!muted && volume < 0.5"
+       [class.fa-volume-up]="!muted && volume > 0.5"
+       [class.fa-lg]="true"
+      ></i>
     </button>
-</div>
-
-<style>
-#currtime{
-    width: 20px;
-    float: left;
-}
-#endtime{
-    width: 10px;
-    float: left;
-}
-#progressbar{
-    width: 150px;
-    float: left;
-    margin-top: 15px;
-}
-#progress{
-    float: left;
-    width: 180px;
-}
-#secondarycontrols{
-    float: left;
-    width: 100px;
-    margin-left: 5px;
-}
-#controls{
-    float: left;
-    width: 90px;
-    margin-left: 20px;
-}
-#volume{
-    margin-top: 15px;
-    float: left;
-    width: 100px;
-}
-.pushed_in {
-    color: green
-}
-</style>
+  </div>
 </div>

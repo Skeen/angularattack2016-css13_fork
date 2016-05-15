@@ -11,6 +11,7 @@ import events = require('events');
     directives: [
         PROGRESSBAR_DIRECTIVES
     ]
+    styleUrls: ['player.css']
 })
 export class Player extends events.EventEmitter
 {

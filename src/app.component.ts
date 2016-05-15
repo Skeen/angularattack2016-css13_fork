@@ -15,6 +15,7 @@ var mm = require('musicmetadata')
     directives: [
         Player, Playlist, Search
     ]
+    styleUrls: ['app.component.css']
 })
 export class AppComponent
 {

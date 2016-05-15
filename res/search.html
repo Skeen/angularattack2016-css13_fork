@@ -1,3 +1,8 @@
-<form>
-	<input type="search" [(ngModel)]="searchInput" (keyup)="searchFor()"/>
-</form>
+<div class="col-md-2">
+	<div class="box">
+		<div class="searchform">
+			<span class="icon"><i class="fa fa-search"></i></span>
+			<input type="search" id="search" placeholder="Search..." [(ngModel)]="searchInput" (keyup)="searchFor()"/>
+		</div>
+	</div>
+</div>
