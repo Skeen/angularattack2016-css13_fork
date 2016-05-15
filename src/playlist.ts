@@ -1,8 +1,5 @@
 import {Component} from '@angular/core';
-
-import {Song} from 'music-streamer-library';
-
-// Current active song character U+23F5 || &#9205;
+import {Song, Album, Artist, HashTable, HTTP_HashTable} from 'music-streamer-library';
 
 import events = require('events');
 
@@ -10,30 +7,35 @@ import events = require('events');
 	selector: 'playlist',
 	templateUrl: 'playlist.html'
 })
+
 export class Playlist extends events.EventEmitter
 {
 	private songs:Song[] = [];
-	private name:string;
+	private name:string = "New Playlist";
 
 	private currentSong:Song;
 	private currentSongIndex:number;
+	private currentAlbum : Album;
+	private currentArtists : Artist[];
+
+	private dht: HashTable;
 
     constructor()
     {
         super();
-        this.emit('ready');
-        this.addSong(new Song('13'));
+		this.emit('ready');
 	}
 
 	public addSong(song:Song): void
-	{
-        this.emit('addSong');
+	{		
 		this.songs.push(song);
+		this.emit('addSong');
+
 	}
 
 	public changeSong(index:number): void
-	{	
-        this.emit("changeSong");
+	{
+		this.emit("changingSong");
 		var newSong = this.songs[index];
 		if(newSong)
 		{
@@ -46,6 +48,8 @@ export class Playlist extends events.EventEmitter
 			// No song found at given index.
 			// TODO: error handling?
 		}
+		this.emit("changedSong");
+
 	}
 
 	public getSong(): Song
@@ -56,5 +60,41 @@ export class Playlist extends events.EventEmitter
 	public getSongIndex(): number
 	{
 		return this.currentSongIndex; 
+	}
+
+	private setDHT(dht:HashTable): void
+	{
+		this.dht = dht;
+	}
+
+	private getSongAlbum(song:Song): void
+	{
+		var albumSHA = song.getAlbum();
+		this.dht.get(albumSHA, function(err?:any, res?:string)
+			{
+				if(err)
+				{
+					return;
+				}
+				this.album = Album.fromJSON(JSON.parse(res));
+				this.albumName = this.album.name;
+			}.bind(this));
+	}
+
+	private getSongArtists(song:Song): void
+	{
+		var artistSHAs = song.getArtists();
+		for(var i = 0; i < artistSHAs.length; i++)
+		{
+			this.dht.get(artistSHAs[i], function(err?:any, res?:string)
+			{
+				if(err)
+				{
+					return;
+				}
+				this.artists[i] = Artist.fromJSON(JSON.parse(res));
+				this.artistNames[i] = this.artists[i].name;
+			}.bind(this));
+		}
 	}
 }
