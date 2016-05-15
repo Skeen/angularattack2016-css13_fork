@@ -54,6 +54,8 @@
 <div id="secondarycontrols">
     <button type="button"
         (click)="flip_shuffle()"
+        tooltipPopupDelay='5000' [tooltip]='shuffle ? "Shuffling" : "Not shuffling"'
+        tooltipPlacement="bottom"
         >
         <i class="fa fa-random" aria-hidden="true"
             [class.pushed_in]="shuffle"
@@ -61,6 +63,8 @@
     </button>
     <button type="button"
         (click)="push_repeat()"
+        tooltipPopupDelay='5000' [tooltip]='repeat ? (repeat == 1 ? "Repeating song" : "Repeating playlist") : "Not repeating"'
+        tooltipPlacement="bottom"
         >
         <i class="fa" aria-hidden="true"
             [class.pushed_in]="repeat != 0"
@@ -71,6 +75,8 @@
 
     <button type="button"
         (click)="mute()"
+        tooltipPopupDelay='5000' [tooltip]='muted ? "muted" : volume * 100'
+        tooltipPlacement="bottom"
         >
         <i aria-hidden="true"
            [class.fa]="true"
