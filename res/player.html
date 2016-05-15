@@ -11,7 +11,7 @@
 <div class="col-md-2">
   <div id="previous" class="col-md-4">
     <button type="button"
-      (click)="songPrevious()"
+        (click)="prevSong()"
     >
     <i class="fa fa-step-backward fa-lg" aria-hidden="true"></i>
     </button>
@@ -30,7 +30,7 @@
   </div>
   <div id="button" class="col-md-4">
     <button type="button"
-      (click)="songNext()"
+        (click)="nextSong()"
       >
       <i class="fa fa-step-forward fa-lg" aria-hidden="true"></i>
     </button>
@@ -56,6 +56,8 @@
   <div id="button" class="col-md-4">
     <button type="button"
       (click)="flip_shuffle()"
+        tooltipPopupDelay='5000' [tooltip]='shuffle ? "Shuffling" : "Not shuffling"'
+        tooltipPlacement="bottom"
       >
       <i class="fa fa-random fa-lg" aria-hidden="true"
         [class.pushed_in]="shuffle"
@@ -64,16 +66,22 @@
   </div>
   <div id="button" class="col-md-4">
     <button type="button"
-      (click)="flip_repeat()"
+        (click)="push_repeat()"
+        tooltipPopupDelay='5000' [tooltip]='repeat ? (repeat == 1 ? "Repeating song" : "Repeating playlist") : "Not repeating"'
+        tooltipPlacement="bottom"
       >
-      <i class="fa fa-repeat fa-lg" aria-hidden="true"
-        [class.pushed_in]="repeat"
+        <i class="fa" aria-hidden="true"
+            [class.pushed_in]="repeat != 0"
+            [class.fa-repeat]="repeat <= 1"
+            [class.fa-undo]="repeat == 2"
       ></i>
     </button>
   </div>
   <div id="button" class="col-md-4">
     <button type="button"
       (click)="mute()"
+        tooltipPopupDelay='5000' [tooltip]='muted ? "muted" : volume * 100'
+        tooltipPlacement="bottom"
       >
       <i aria-hidden="true"
        [class.fa]="true"

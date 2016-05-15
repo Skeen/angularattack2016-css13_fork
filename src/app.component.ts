@@ -1,11 +1,15 @@
 import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
-import {TorrentClient, Song, createSong} from 'music-streamer-library';
+import {TorrentClient, Song, Storage, createSong} from 'music-streamer-library';
 
 import {Player} from './player';
 import {Playlist} from './playlist';
 import {Search} from './search';
+import {SongInfo} from './songInfo';
+import {PlaylistControl} from './playlist_control';
+
+import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
 var mm = require('musicmetadata')
 
@@ -13,8 +17,9 @@ var mm = require('musicmetadata')
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
-        Player, Playlist, Search
-    ]
+        Player, Playlist, Search, SongInfo, PlaylistControl,
+		TOOLTIP_DIRECTIVES    
+	]
     styleUrls: ['app.component.css']
 })
 export class AppComponent
@@ -27,16 +32,13 @@ export class AppComponent
     @ViewChild('playlist')
     private playlist_element : Playlist;
 
-    @ViewChild('log')
-    private log_element : ElementRef;
-
+    // List of downloads
     private downloads : any = [];
+    private seeding : any = [];
 
-    private log(str: any, query?: string) : void
+    private add_to_playlist(download:any)
     {
-        var p = document.createElement('p');
-        p.innerHTML = str;
-        this.log_element.nativeElement.appendChild(p);
+        this.playlist_element.addSong(download.song);
     }
 
     private torrent_to_html(download:any, name:string, info:string, magnet:string, blobURL:string, query?:string) : void
@@ -45,9 +47,6 @@ export class AppComponent
         download.name = name;
         download.info = info;
         download.blobURL = blobURL;
-        download.download_speed = 0;
-        download.progress = 0;
-        download.time_left = 0;
    
         this.downloads.push(download);
     }
@@ -59,6 +58,13 @@ export class AppComponent
         download.time_left = time_left;
     }
 
+    // TODO: Add DHT code
+    // TODO: Add replication code
+    // TODO: Add searching
+    // TODO: Add search results
+    // TODO: Seed local content
+    // TODO: Allow uploading local content
+
     private pullOutMetadata(download:any, file: any, magnetURI: string) : void
     {
         var stream = file.createReadStream();
@@ -68,11 +74,11 @@ export class AppComponent
 
             var song: Song = createSong(metadata, magnetURI);
             song.setFileName(file.name);
-
+            // Set stream (used untill blob is ready)
+            song.setStream(file);
             download.song = song;
 
-            // this.playlist_element.addSong(song);
-            /*
+            // TODO: Replace with getBlob from file (pull request WebTorrent)
             file.getBuffer(function(err: any, buffer: any)
             {
                 if (err) throw err;
@@ -88,22 +94,24 @@ export class AppComponent
                     return ab;
                 }
                 song.setBlob(new Blob([toArrayBuffer(buffer)]));
-
-                // Save blob somewhere
+                // Provide a copy for storage (addSong is destructive)
+                Storage.addSong(Song.fromJSON(song), function(err: any, sha1: string)
+                {
+                    if (err) throw err;
+                    download.storedLocally = true;
+                });
             });
-            */
         }.bind(this));
     }
 
     private handleMusicStream(download:any, file: any, magnetURI: string) : void
     {
-        this.player_element.playSong(file);
         // Add download URL to downloads
         file.getBlobURL(
             function(err: any, url: any)
             {
                 if (err) {
-                    return this.log(err.message);
+                    alert(err.message);
                 }
                 this.torrent_progress(download, 0, 1, 0);
                 download.file_blobURL = url;
@@ -114,14 +122,17 @@ export class AppComponent
 
     private onSubmit() : void
     {
-        var download = {}
+        var download = {
+            download_speed: 0,
+            progress: 0,
+            time_left: 0
+        }
         // Get torrent magnet from text input field.
         TorrentClient.download_song(this.magnetURI,
             function(file:any, magnetURI:string)
             {
                 this.handleMusicStream(download, file, magnetURI);
             }.bind(this),
-            null,
             null,
             function(name:string, info:string, magnet:string, blobURL:string, query?:string)
             {
@@ -136,13 +147,122 @@ export class AppComponent
 
     constructor()
     {
+        // Seed all local content
+        Storage.getKeys(function(err: any, keys: string[])
+        {
+            if (err) throw err;
+
+            //console.log(keys);
+
+            for (var key in keys)
+            {
+                var lookup_key = keys[key];
+                (function(lookup_key: string) {
+                    Storage.getSong(lookup_key, function(err: any, song: Song) {
+                        if (err) throw err;
+
+                        var blob: any = song.getBlob();
+                        var seed : any = {
+                            song: song,
+                            upload_speed: 0,
+                            bytes_uploaded: 0,
+                            num_peers: 0
+                        };
+
+                        function update_flow(upload_speed:number, bytes_uploaded:number, num_peers:number)
+                        {
+                            seed.upload_speed = upload_speed;
+                            seed.bytes_uploaded = bytes_uploaded;
+                            seed.num_peers = num_peers;
+                        }
+
+                        blob.name = song.getFileName();
+                        TorrentClient.seed_song(blob, 
+                            function(torrent:any)
+                            {
+                                function read_flow_from_torrent()
+                                {
+                                    update_flow(torrent.uploadSpeed, torrent.uploaded, torrent.numPeers);
+                                }
+
+                                setInterval(function()
+                                {
+                                    read_flow_from_torrent();
+                                }, 1000);
+                                torrent.on('wire', function()
+                                {
+                                    read_flow_from_torrent();
+                                });
+                            },
+                            function(name:string, info:string, magnet:string, blobURL:string, query?:string)
+                            {
+                                seed.magnetURI = magnet;
+                                seed.name = name;
+                                seed.info = info;
+                                seed.blobURL = blobURL;
+
+                                this.seeding.push(seed);
+                            }.bind(this),
+                            update_flow
+                        );
+                    }.bind(this));
+                }.bind(this))(lookup_key);
+            }
+        }.bind(this));
     }
 
     ngAfterViewInit()
     {
-        this.playlist_element.on('changeSong', function()
+        this.playlist_element.on('changingSong', function(index:number, new_song:Song)
         {
-            alert("changed song!");
-        });
+            this.player_element.playSong(new_song.getRenderable(), function()
+            {
+                this.playlist_element.setActive(index);
+            }.bind(this));
+        }.bind(this));
+
+        this.player_element.on('nextSong', function()
+        {
+            if(this.player_element.getShuffle())
+            {
+                this.playlist_element.randomSong();
+            }
+            else
+            {
+                var repeat_all = this.player_element.getRepeatAll();
+                this.playlist_element.nextSong(repeat_all);
+            }
+        }.bind(this));
+
+        this.player_element.on('prevSong', function()
+        {
+            if(this.player_element.getShuffle())
+            {
+                this.playlist_element.randomSong();
+            }
+            else
+            {
+                var repeat_all = this.player_element.getRepeatAll();
+                this.playlist_element.prevSong(repeat_all);
+            }
+        }.bind(this));
+
+        this.player_element.on('song-ended', function()
+        {
+            var repeat = this.player_element.getRepeat();
+            if(repeat)
+            {
+                this.playlist_element.sameSong();
+            }
+            else if(this.player_element.getShuffle())
+            {
+                this.playlist_element.randomSong();
+            }
+            else
+            {
+                var repeat_all = this.player_element.getRepeatAll();
+                this.playlist_element.nextSong(repeat_all);
+            }
+        }.bind(this));
     }
 }

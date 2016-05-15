@@ -1,0 +1,7 @@
+<tabset [vertical]="true">
+	<tab (select)="setLocalActive()" heading="Local Content"></tab>
+	<tab (select)="setNetworkingActive()" heading="Networking"></tab>
+	<tab *ngFor="let playlist of playlists; let i=index"
+	(select)="changePlaylist(i)" heading="{{playlist.name}}">
+	</tab>
+</tabset>

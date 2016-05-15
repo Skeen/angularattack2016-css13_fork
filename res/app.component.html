@@ -10,37 +10,118 @@
 				</div>
 			</div>
     	</div>
-    </nav>
-    <div id="content">
-        <h1>Streamy</h1>
+</nav>
+<div id="content">
+    <h1>Streamy</h1>
 
-		<form id='magnet' (ngSubmit)="onSubmit()">
-		    <label for="torrentId">Download from a magnet link: </label>
-		    <input type="text" 
-		  [(ngModel)]="magnetURI" placeholder="magnet:" >
-		    <button type="submit">Download</button>
-		</form>
-		<h2>Playlist</h2>
-		<playlist #playlist></playlist>
-	<h2>Downloads</h2>
-	<ul>
-	    <li *ngFor="let dl of downloads">
-	        <b>{{dl.name}}</b>
-	        <ul>
-	            <li> Hash: {{dl.info}} </li>
-	            <li> <a [href]="dl.magnetURI" target="_blank">[Magnet URI]</a></li>
-	            <li> <a [href]="dl.blobURL" target="_blank" download="{{dl.name}}.torrent">[Download .torrent]</a></li>
-	            <li *ngIf="dl.file_blobURL != undefined"> Download full file: <a [href]="dl.file_blobURL" target="_blank" download="{{dl.name}}">{{dl.name}}</a></li>
-	            <li> Progress: {{dl.progress*100 | number:'.1-1'}} % </li>
-	            <li> Speed: {{dl.download_speed/1000 | number:'.1-1'}} kB/sec </li>
-	            <li> Timeleft: {{dl.time_left/1000 | number:'.1-1'}} sec </li>
-	        </ul>
-	    </li>
-	</ul>
-	'(Blob URLs only work if the file is loaded from a server.
-	    "http//localhost" works.
-	    "file://" does not.)
-	<h2>Log</h2>
-	<div #log></div>
-    </div>
+    <form id='magnet' (ngSubmit)="onSubmit()">
+        <label for="torrentId">Download from a magnet link: </label>
+        <input type="text" 
+      [(ngModel)]="magnetURI" placeholder="magnet:" >
+        <button type="submit">Download</button>
+    </form>
+
+    <h2>Playlist</h2>
+    <playlist #playlist></playlist>
+    <h2>Downloads</h2>
+    <ul>
+        <li *ngFor="let dl of downloads">
+            <b>{{dl.name}}</b>
+            <ul>
+                <li> Hash: {{dl.info}} </li>
+                <li>
+                    <a [href]="dl.magnetURI" target="_blank"
+                       tooltipPopupDelay='1000' tooltip='Magnet URI'
+                        >
+                        <i class="fa fa-magnet" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li>
+                    <a [href]="dl.blobURL" target="_blank" download="{{dl.name}}.torrent"
+                       tooltipPopupDelay='1000' tooltip='Download .torrent'
+                        >
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li *ngIf="dl.file_blobURL != undefined">
+                    <a [href]="dl.file_blobURL" target="_blank" download="{{dl.name}}"
+                       tooltipPopupDelay='1000' tooltip='Download {{dl.name}}'
+                        >
+                        <i class="fa fa-file-audio-o" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li> Progress: {{dl.progress*100 | number:'.1-1'}} % 
+                    <i *ngIf="dl.progress != 1" class="fa fa-cog fa-spin fa-fw"></i>
+                </li>
+                <li> Speed: {{dl.download_speed/1000 | number:'.1-1'}} kB/sec </li>
+                <li> Timeleft: {{dl.time_left/1000 | number:'.1-1'}} sec </li>
+                <li> Add to playlist: 
+                    <button type="button"
+                            [disabled]="dl.song == undefined"
+                            (click)="add_to_playlist(dl)"
+                            >
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                    </button>
+                </li>
+                <li *ngIf="dl.storedLocally"> <i class="fa fa-hdd-o" aria-hidden="true"></i> Stored locally </li>
+            </ul>
+        </li>
+    </ul>
+    '(Blob URLs only work if the file is loaded from a server.
+        "http//localhost" works.
+        "file://" does not.)
+    <h2>Seeding</h2>
+    <ul>
+        <li *ngFor="let seed of seeding">
+            <b>{{seed.name}}</b>
+            <ul>
+                <li> Hash: {{seed.info}} </li>
+                <li>
+                    <a [href]="seed.magnetURI" target="_blank"
+                       tooltipPopupDelay='1000' tooltip='Magnet URI'
+                        >
+                        <i class="fa fa-magnet" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li>
+                    <a [href]="seed.blobURL" target="_blank" download="{{seed.name}}.torrent"
+                       tooltipPopupDelay='1000' tooltip='Download .torrent'
+                        >
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <!--
+                <li *ngIf="dl.file_blobURL != undefined">
+                    <a [href]="dl.file_blobURL" target="_blank" download="{{dl.name}}"
+                       tooltipPopupDelay='1000' tooltip='Download {{dl.name}}'
+                        >
+                        <i class="fa fa-file-audio-o" aria-hidden="true"></i>
+                    </a>
+                </li>
+                -->
+                <ul>
+                    <li> Speed: {{seed.upload_speed/1000 | number:'.1-1'}} kB/sec </li>
+                    <li> Bytes uploaded: {{seed.bytes_uploaded/1000 | number:'.1-1'}} kB </li>
+                    <li> Num peers: #{{seed.num_peers}} </li>
+                </ul>
+                <li> Add to playlist: 
+                    <button type="button"
+                            [disabled]="seed.song == undefined"
+                            (click)="add_to_playlist(seed)"
+                            >
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                    </button>
+                </li>
+                <li> <i class="fa fa-hdd-o" aria-hidden="true"></i> Stored locally </li>
+            </ul>
+        </li>
+    </ul>
+
+	<h2>Playlists</h2>
+	<playlist_control></playlist_control>
+
+	<h2>Info</h2>
+	<songInfo></songInfo>
 </div>
+</div>
+

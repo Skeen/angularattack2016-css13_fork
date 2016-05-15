@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
 import {PROGRESSBAR_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
+import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
 import events = require('events');
 
@@ -9,7 +10,7 @@ import events = require('events');
     selector: 'player',
     templateUrl: 'player.html',
     directives: [
-        PROGRESSBAR_DIRECTIVES
+        PROGRESSBAR_DIRECTIVES, TOOLTIP_DIRECTIVES
     ]
     styleUrls: ['player.css']
 })
@@ -24,11 +25,11 @@ export class Player extends events.EventEmitter
 
     // Audio controls
     private shuffle:boolean;
-	private repeat:boolean;
+	private repeat:number;
     private playing:boolean;
     private muted:boolean;
 
-    private volume:number = 100;
+    private volume:number = 1;
 
     public max:number = Infinity;
     public value:number = 0;
@@ -37,35 +38,49 @@ export class Player extends events.EventEmitter
     {
         super();
         this.rendermedia = require('render-media');
-        this.emit('ready');
 
 		this.shuffle = false;
-		this.repeat = false;
+		this.repeat = 0;
         this.playing = false;
 	}
 
-    public playSong(data_source:any) : void
+    public playSong(data_source:any, callback:any) : void
     {
         this.rendermedia.render(data_source, this.media_player.nativeElement,
             function(err: any, elem: any)
             {
                 if (err) throw err;
+                // Fire callback when playback starts
+                callback();
             }
         );
     }
 
+    public getShuffle() : boolean
+    {
+        return this.shuffle;
+    }
+
 	private flip_shuffle(): void
 	{
-        this.emit('shuffle');
 		this.shuffle = !this.shuffle;
-
-        console.log(this.media_player);
 	}
-	
-	private flip_repeat(): void
+
+    public getRepeat() : boolean
+    {
+        return this.repeat == 1;
+    }
+
+    public getRepeatAll() : boolean
+    {
+        return this.repeat == 2;
+    }
+
+	private push_repeat(): void
 	{
-        this.emit('repeat');
-		this.repeat = !this.repeat;
+        this.repeat += 1;
+        if(this.repeat > 2)
+            this.repeat = 0;
 	}
 
     private flip_playing(): void
@@ -100,14 +115,14 @@ export class Player extends events.EventEmitter
         this.playing = true;
     }
 
-    private songNext() : void
+    private nextSong() : void
     {
-        this.emit('song-next');
+        this.emit('nextSong');
     }
 
-    private songPrevious() : void
+    private prevSong() : void
     {
-        this.emit('song-previous');
+        this.emit('prevSong');
     }
 
     private updateTime() : void

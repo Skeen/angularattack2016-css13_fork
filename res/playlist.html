@@ -1,13 +1,13 @@
-<table class="table">
-	<tbody>
-		<tr *ngFor="let song of songs; let i=index"
-	   	(dblclick)="changeSong(i)">
-			<td>
-				<i *ngIf="i == getSongIndex()" class="fa fa-angle-right" aria-hidden="true"></i>
-			</td>
-			<td>{{song.title}}</td>
-			<td>{{song.albumName}}</td>
-			<td>{{song.artistNames[0]}}</td>
-		</tr>
-	</tbody>
-</table>
+<div class="container-fluid">
+    <div class="row" *ngFor="let song of songs; let i=index"
+                     (dblclick)="changeSong(i)">
+        <div class="col-md-1">
+            <i *ngIf="i == getSongIndex()" class="fa fa-angle-right" aria-hidden="true"></i>
+            <i *ngIf="i == getChangeSongIndex()" class="fa fa-circle-o-notch fa-spin fa-fw" aria-hidden="true"></i>
+        </div>
+        <div class="col-md-3">{{song.title}}</div>
+        <div class="col-md-3">{{song.albumName}}</div>
+        <div class="col-md-3">{{song.artistNames[0]}}</div>
+        <div class="col-md-2">HELLO</div>
+    </div>
+</div>
