@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
 import {TorrentClient, Song, Storage, createSong} from 'music-streamer-library';
+import {HashTable, HTTP_HashTable} from 'music-streamer-library';
 
 import {Player} from './player';
 import {Playlist} from './playlist';
@@ -35,6 +36,7 @@ export class AppComponent
 
 	@ViewChild('localcontent')
 	private localcontent_element : LocalContent;
+    private dht : HashTable;
 
     // List of downloads
     private downloads : any = [];
@@ -219,70 +221,7 @@ export class AppComponent
 
     constructor()
     {
-				/*
-        // Seed all local content
-        Storage.getKeys(function(err: any, keys: string[])
-        {
-            if (err) throw err;
-
-            //console.log(keys);
-
-            for (var key in keys)
-            {
-                var lookup_key = keys[key];
-                (function(lookup_key: string) {
-                    Storage.getSong(lookup_key, function(err: any, song: Song) {
-                        if (err) throw err;
-
-                        var blob: any = song.getBlob();
-                        var seed : any = {
-                            song: song,
-                            upload_speed: 0,
-                            bytes_uploaded: 0,
-                            num_peers: 0
-                        };
-
-                        function update_flow(upload_speed:number, bytes_uploaded:number, num_peers:number)
-                        {
-                            seed.upload_speed = upload_speed;
-                            seed.bytes_uploaded = bytes_uploaded;
-                            seed.num_peers = num_peers;
-                        }
-
-                        blob.name = song.getFileName();
-                        TorrentClient.seed_song(blob, 
-                            function(torrent:any)
-                            {
-                                function read_flow_from_torrent()
-                                {
-                                    update_flow(torrent.uploadSpeed, torrent.uploaded, torrent.numPeers);
-                                }
-
-                                setInterval(function()
-                                {
-                                    read_flow_from_torrent();
-                                }, 1000);
-                                torrent.on('wire', function()
-                                {
-                                    read_flow_from_torrent();
-                                });
-                            },
-                            function(name:string, info:string, magnet:string, blobURL:string, query?:string)
-                            {
-                                seed.magnetURI = magnet;
-                                seed.name = name;
-                                seed.info = info;
-                                seed.blobURL = blobURL;
-
-                                this.seeding.push(seed);
-                            }.bind(this),
-                            update_flow
-                        );
-                    }.bind(this));
-                }.bind(this))(lookup_key);
-            }
-        }.bind(this));
-		*/
+        this.dht = new HTTP_HashTable();
     }
 
 
