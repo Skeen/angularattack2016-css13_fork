@@ -2,16 +2,20 @@ import {Component} from '@angular/core';
 import {Storage, Song, sha1, TorrentClient} from 'music-streamer-library';
 import {Playlist} from './playlist';
 
+import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
+
 @Component({
 	selector: 'localcontent',
-	templateUrl: 'localcontent.html'
+	templateUrl: 'localcontent.html',
+	styleUrls: ['localcontent.css'],
+	directives: [TOOLTIP_DIRECTIVES]
 })
 export class LocalContent extends Playlist
 {
 	private storageKeys:string[] = [];
 
 	protected songs:Song[] = [];
-	private seeding: any = [];
+	private seeding:any = [];
 
 	constructor()
 	{
@@ -30,7 +34,7 @@ export class LocalContent extends Playlist
 	
 	public addSong(song:Song, callback?:any): void
 	{
-		var storedSong:Song = song;
+		var storedSong:Song = Song.fromJSON(song);
 		//add to storage first
 		Storage.addSong(storedSong, function(err?:any, value?:string)
 			{
@@ -40,7 +44,11 @@ export class LocalContent extends Playlist
 				}
 				if(!(this.hasDuplicate(value)))
 				{
-					this.songs.push(song);
+					var i:number = (this.songs.push(song)) - 1;
+					this.seed(i, song);
+					console.log(i);
+					console.log(this.songs);
+					console.log(this.seeding);
 					this.emit('addSong');
 				}
 				if(callback)
@@ -62,7 +70,7 @@ export class LocalContent extends Playlist
 				this.storageKeys = keys;
 				if(callback)
 				{
-					callback(undefined, keys);
+					callback(err, keys);
 				}
 			}.bind(this));
 	}
@@ -81,9 +89,10 @@ export class LocalContent extends Playlist
 		var key:string = this.storageKeys[next];
 		if(!key)
 		{
+			this.updateSeedList(songs);
 			this.songs = songs;
-			this.updateSeedList();
-			callback(undefined, this.songs);
+			if(callback)
+				callback(undefined, this.songs);
 			return;
 		}
 		Storage.getSong(key, function(err?:any, song?:Song)
@@ -98,64 +107,54 @@ export class LocalContent extends Playlist
 			}.bind(this));
 	}
 
-	private updateSeedList()
+	private updateSeedList(songs:Song[])
 	{
-		this.getSongs(function(err?:any, songs?:Song[])
+		for(var i=0; i < songs.length; i++)
 		{
-			if(err || !songs)
-			{
-				//TODO: handle this error
-				alert("Unable to get songs from local storage");
-			}
-
-			for(var song of songs)
-			{
-				var blob: any = song.getBlob();
-                var seed : any = 
-					{
-                        song: song,
-                        upload_speed: 0,
-                        bytes_uploaded: 0,
-                        num_peers: 0
-                    };
-
-                    function update_flow(upload_speed:number, bytes_uploaded:number, num_peers:number)
-                    {
-                        seed.upload_speed = upload_speed;
-                        seed.bytes_uploaded = bytes_uploaded;
-                        seed.num_peers = num_peers;
-                    }
-
-                    blob.name = song.getFileName();
-                    TorrentClient.seed_song(blob, 
-						function(torrent:any)
-                        {
-                            function read_flow_from_torrent()
-                            {
-                                update_flow(torrent.uploadSpeed, torrent.uploaded, torrent.numPeers);
-                            }
-
-                            setInterval(function()
-                            {
-                                read_flow_from_torrent();
-                            }, 1000);
-                            torrent.on('wire', function()
-                            {
-                                read_flow_from_torrent();
-                            });
-                        },
-                        function(name:string, info:string, magnet:string, blobURL:string, query?:string)
-                        {
-                            seed.magnetURI = magnet;
-                            seed.name = name;
-                            seed.info = info;
-                            seed.blobURL = blobURL;
-
-                            this.seeding.push(seed);
-                        }.bind(this));
-			}
-		}.bind(this));
-
+			var song:Song = songs[i];
+			this.seed(i, song);
+		}
 	}
 
+	private seed(i:number, song:Song):void
+	{
+		var blob: any = song.getBlob();
+        var seed: any = 
+			{
+                song: song,
+                upload_speed: 0,
+                bytes_uploaded: 0,
+                num_peers: 0,
+				name: "",
+				magnetURI:"",
+				info:"",
+				blobURL:""
+            };
+		blob.name = song.getFileName();
+		this.seeding[i] = seed;
+		TorrentClient.seed_song(blob,
+			function(torrent:any)
+			{
+				setInterval(function()
+                {
+                    this.seeding[i].upload_speed = torrent.upload_speed || 0;
+        			this.seeding[i].bytes_uploaded = torrent.bytes_uploaded || 0;
+        			this.seeding[i].num_peers = torrent.num_peers || 0;
+                }.bind(this), 1000);
+                torrent.on('wire', function()
+                {
+					this.seeding[i].upload_speed = torrent.upload_speed || 0;
+        			this.seeding[i].bytes_uploaded = torrent.bytes_uploaded || 0;
+        			this.seeding[i].num_peers = torrent.num_peers || 0;
+				}.bind(this));
+			}.bind(this),
+			function(name:string, info:string, magnet:string, blobURL:string, query?:string)
+            {
+                this.seeding[i].magnetURI = magnet || "";
+                this.seeding[i].name = name || "";
+                this.seeding[i].info = info || "";
+                this.seeding[i].blobURL = blobURL || "";
+			}.bind(this));
+
+	}
 }

@@ -56,66 +56,7 @@ export class AppComponent
     {
         this.downloads_element.downloadSong(this.magnetURI);
     }
-
-	private updateSeedList()
-	{
-		this.localcontent_element.getSongs(function(err?:any, songs?:Song[])
-		{
-			if(err || !songs)
-			{
-				//TODO: handle this error
-				alert("Unable to get songs from local storage");
-			}
-
-			for(var song of songs)
-			{
-				var blob: any = song.getBlob();
-                var seed : any = 
-                {
-                    song: song,
-                    upload_speed: 0,
-                    bytes_uploaded: 0,
-                    num_peers: 0
-                };
-
-                function update_flow(upload_speed:number, bytes_uploaded:number, num_peers:number)
-                {
-                    seed.upload_speed = upload_speed;
-                    seed.bytes_uploaded = bytes_uploaded;
-                    seed.num_peers = num_peers;
-                }
-
-                blob.name = song.getFileName();
-                TorrentClient.seed_song(blob, 
-                    function(torrent:any)
-                    {
-                        function read_flow_from_torrent()
-                        {
-                            update_flow(torrent.uploadSpeed, torrent.uploaded, torrent.numPeers);
-                        }
-
-                        setInterval(function()
-                        {
-                            read_flow_from_torrent();
-                        }, 1000);
-                        torrent.on('wire', function()
-                        {
-                            read_flow_from_torrent();
-                        });
-                    },
-                    function(name:string, info:string, magnet:string, blobURL:string, query?:string)
-                    {
-                        seed.magnetURI = magnet;
-                        seed.name = name;
-                        seed.info = info;
-                        seed.blobURL = blobURL;
-
-                        this.seeding.push(seed);
-                    }.bind(this));
-			}
-		}.bind(this));
-
-	}
+	
 
     constructor()
     {
@@ -176,6 +117,12 @@ export class AppComponent
             }
         }.bind(this));
 
+		// Load local content at startup
+		this.localcontent_element.getKeys(function(err?:any, key?:any)
+			{
+				this.localcontent_element.getSongs(undefined);						 
+			}.bind(this));
+
         // added is a callback function
         this.downloads_element.on('downloaded', function(song : Song, added : any)
         {
@@ -192,7 +139,5 @@ export class AppComponent
         {
             this.playlist_element.addSong(song);
         }.bind(this));
-
-		this.updateSeedList();
     }
 }

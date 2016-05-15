@@ -1,13 +1,13 @@
 <div class="container-fluid">
-	<div class="row" *ngFor="let song of songs; let i=index"
+	<div class="row" *ngFor="let seed of seeding;  let i=index"
 	  				(dblclick)="changeSong(i)">
 		<div class="col-md-1">
 			<i *ngIf="i == getSongIndex()" class="fa fa-angle-right" aria-hidden="true"></i>
 			<i *ngIf="i == getChangeSongIndex()" class="fa fa-circle-o-notch fa-spin fa-fw" aria-hidden="true"></i>
 		</div>
-		<div class="col-ms-2">{{song.title}}</div>
-		<div class="col-ms-2">{{song.albumName}}</div>
-		<div class="col-ms-2">{{song.artistNames[0]}}</div>
+		<div class="col-ms-2">{{songs[i].title}}</div>
+		<div class="col-ms-2">{{songs[i].albumName}}</div>
+		<div class="col-ms-2">{{songs[i].artistNames[0]}}</div>
 		<div class="col-ms-1">
 			<a [href]="seed.magnetURI" target="_blank"
                        tooltipPopupDelay='1000' tooltip='Magnet URI'>
@@ -24,7 +24,7 @@
 			Speed: {{seed.upload_speed/1000 | number:'.1-1'}} kB/sec
 		</div>
 		<div class="col-ms-1">
-			Uploaded: {{seed.bytes_upladed/1000 | number:'1-1'}} kB
+			Uploaded: {{seed.bytes_uploaded/1000 | number:'.1-1'}} kB
 		</div>
 		<div class="col-ms-1">
 			Peers: #{{seed.num_peers}}
@@ -32,7 +32,7 @@
 		<div class="col-ms-1">
 		   	<button type="button"
         		[disabled]="seed.song == undefined"
-            	(click)="add_to_playlist(seed)">
+            	(click)="add_to_playlist(seeding[i])">
                 	<i class="fa fa-plus" aria-hidden="true"></i>
             </button>
 		</div>
