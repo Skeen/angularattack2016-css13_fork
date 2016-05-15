@@ -13,7 +13,6 @@ import events = require('events');
         TYPEAHEAD_DIRECTIVES
     ]
 })
-
 export class Search extends events.EventEmitter
 {
 	private searchInput:string = "";
@@ -45,7 +44,7 @@ export class Search extends events.EventEmitter
                     }
 
                     var resp = JSON.parse(value);
-                    var keys = [];
+                    var keys : any[] = [];
                     resp.forEach(function(obj:any)
                     {
                         var value = JSON.parse(obj.value);
