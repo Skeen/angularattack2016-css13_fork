@@ -22,10 +22,30 @@
             <b>{{dl.name}}</b>
             <ul>
                 <li> Hash: {{dl.info}} </li>
-                <li> <a [href]="dl.magnetURI" target="_blank">[Magnet URI]</a></li>
-                <li> <a [href]="dl.blobURL" target="_blank" download="{{dl.name}}.torrent">[Download .torrent]</a></li>
-                <li *ngIf="dl.file_blobURL != undefined"> Download full file: <a [href]="dl.file_blobURL" target="_blank" download="{{dl.name}}">{{dl.name}}</a></li>
-                <li> Progress: {{dl.progress*100 | number:'.1-1'}} % </li>
+                <li>
+                    <a [href]="dl.magnetURI" target="_blank"
+                       tooltipPopupDelay='1000' tooltip='Magnet URI'
+                        >
+                        <i class="fa fa-magnet" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li>
+                    <a [href]="dl.blobURL" target="_blank" download="{{dl.name}}.torrent"
+                       tooltipPopupDelay='1000' tooltip='Download .torrent'
+                        >
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li *ngIf="dl.file_blobURL != undefined">
+                    <a [href]="dl.file_blobURL" target="_blank" download="{{dl.name}}"
+                       tooltipPopupDelay='1000' tooltip='Download {{dl.name}}'
+                        >
+                        <i class="fa fa-file-audio-o" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li> Progress: {{dl.progress*100 | number:'.1-1'}} % 
+                    <i *ngIf="dl.progress != 1" class="fa fa-cog fa-spin fa-fw"></i>
+                </li>
                 <li> Speed: {{dl.download_speed/1000 | number:'.1-1'}} kB/sec </li>
                 <li> Timeleft: {{dl.time_left/1000 | number:'.1-1'}} sec </li>
                 <li> Add to playlist: 

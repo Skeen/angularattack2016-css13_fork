@@ -17,6 +17,7 @@ export class Playlist extends events.EventEmitter
 	private currentSongIndex:number;
 	private currentAlbum : Album;
 	private currentArtists : Artist[];
+    private changeSongIndex:number;
 
 	private dht: HashTable;
 
@@ -34,11 +35,13 @@ export class Playlist extends events.EventEmitter
 
 	public changeSong(index:number): void
 	{
+        this.changeSongIndex = index;
 		this.emit("changingSong", index, this.songs[index]);
     }
 
     public setActive(index:number): void
     {
+        this.changeSongIndex = undefined;
 		var newSong = this.songs[index];
 		if(newSong)
 		{
@@ -64,6 +67,11 @@ export class Playlist extends events.EventEmitter
 	{
 		return this.currentSongIndex; 
 	}
+
+    public getChangeSongIndex(): number
+    {
+        return this.changeSongIndex;
+    }
 
 	private setDHT(dht:HashTable): void
 	{

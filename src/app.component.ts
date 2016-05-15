@@ -7,13 +7,17 @@ import {Player} from './player';
 import {Playlist} from './playlist';
 import {Search} from './search';
 
+import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
+
 var mm = require('musicmetadata')
 
 @Component({
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
-        Player, Playlist, Search
+        Player, Playlist, Search,
+
+        TOOLTIP_DIRECTIVES
     ]
 })
 export class AppComponent
