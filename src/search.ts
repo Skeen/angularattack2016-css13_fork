@@ -20,7 +20,8 @@ export class Search extends events.EventEmitter
 	private searchInput:string = "";
     private map:any = {}
 
-    @Input() dht: HashTable;
+    @Input()
+    private dht: HashTable;
 
 	constructor()
 	{
@@ -29,16 +30,6 @@ export class Search extends events.EventEmitter
 
     ngAfterViewInit()
     {
-        /*
-        this.dht.put_raw('alfa', '["beta", "gamma"]', function(err:any)
-        {
-            if(err) throw err;
-        });
-        this.dht.put_raw('alb', '["charlie", "echo"]', function(err:any)
-        {
-            if(err) throw err;
-        });
-        */
 	}
 
     public getAsyncData(context:any):Function
@@ -55,14 +46,13 @@ export class Search extends events.EventEmitter
                     }
 
                     var resp = JSON.parse(value);
-                    var keys = resp.map(function(obj:any)
-                    { 
-                        return obj.key;
-                    });
-
+                    var keys = [];
                     resp.forEach(function(obj:any)
                     {
-                        this.map[obj.key] = obj.value;
+                        var value = JSON.parse(obj.value);
+                        var key = obj.key + " (" + value.type + ")";
+                        keys.push(key);
+                        this.map[key] = value.payload;
                     }.bind(this));
 
                     return resolve(keys);

@@ -9,6 +9,7 @@ import {Playlist} from './playlist';
 import {Search} from './search';
 import {SongInfo} from './songInfo';
 import {PlaylistControl} from './playlist_control';
+import {DropArea} from './droparea';
 import {LocalContent} from './localcontent';
 
 import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
@@ -19,7 +20,7 @@ var mm = require('musicmetadata')
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
-        Player, Playlist, Search, SongInfo, PlaylistControl,
+        Player, Playlist, Search, SongInfo, PlaylistControl, DropArea,
 		LocalContent,
 		TOOLTIP_DIRECTIVES    
 	],
