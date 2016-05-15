@@ -41,7 +41,12 @@ export class AppComponent
 	@ViewChild('downloads')
 	private downloads_element : Downloads;
 
+	@ViewChild('search')
+	private search_element : Search;
+
     private dht : HashTable;
+
+    private search_result : Song;
 
     private seeding : any = [];
 
@@ -54,7 +59,12 @@ export class AppComponent
     
     private onSubmit() : void
     {
-        this.downloads_element.downloadSong(this.magnetURI);
+        this.download_song(this.magnetURI);
+    }
+
+    private download_song(magnetURI:string) : void
+    {
+        this.downloads_element.downloadSong(magnetURI);
     }
 
 	private updateSeedList()
@@ -191,6 +201,12 @@ export class AppComponent
         this.downloads_element.on('add-song', function(song : Song)
         {
             this.playlist_element.addSong(song);
+        }.bind(this));
+
+        this.search_element.on('song-select', function(song : Song)
+        {
+            console.log(song);
+            this.search_result = song;
         }.bind(this));
 
 		this.updateSeedList();

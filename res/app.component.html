@@ -7,7 +7,7 @@
 					<p><player #player></player></p>
 				</div>
 				<div class="col-md-2">
-					<search [dht]="dht"></search>
+					<search #search [dht]="dht"></search>
 				</div>
 			</div>
     	</div>
@@ -23,8 +23,27 @@
         <button type="submit">Download</button>
     </form>
 
+    <h2>Search result</h2>
+    <div *ngIf="search_result">
+    <b>{{search_result.title}}</b> 
+    <ul>
+        <li>Album: {{search_result.albumName}}</li>
+        <li *ngFor="let artist of search_result.artistNames">
+            Artist: {{artist}}
+        </li>
+        <button type="button"
+                class="btn btn-primary"
+                style="width:25%"
+                (click)="download_song(search_result.magnet)"
+                >
+            <i class="fa fa-download" aria-hidden="true"></i>
+        </button>
+    </ul>
+    </div>
+
     <h2>Playlist</h2>
     <playlist #playlist></playlist>
+
     <h2>Downloads</h2>
     <downloads #downloads></downloads>
 
