@@ -11,7 +11,8 @@ import events = require('events');
 	templateUrl: 'search.html',
     directives: [
         TYPEAHEAD_DIRECTIVES
-    ]
+    ],
+	styleUrls: ['search.css']
 })
 export class Search extends events.EventEmitter
 {

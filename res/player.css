@@ -1,0 +1,20 @@
+#button{
+  display: inline-block;
+}
+#buttongroup{
+  display: inline-block;
+}
+#progress{
+  display: inline-block;
+  min-width: 200px
+}
+#volume{
+   display: inline-block;
+  min-width: 100px
+}
+#previous{
+  display: inline-block;
+}
+.pushed_in {
+    color: green;
+}

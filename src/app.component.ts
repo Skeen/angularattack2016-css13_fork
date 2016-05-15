@@ -22,7 +22,8 @@ import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
         Player, Playlist, Search, SongInfo, PlaylistControl, DropArea,
 		LocalContent, Downloads,
 		TOOLTIP_DIRECTIVES    
-	]
+	],
+    styleUrls: ['app.component.css']
 })
 export class AppComponent
 {

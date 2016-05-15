@@ -11,7 +11,8 @@ import events = require('events');
     templateUrl: 'player.html',
     directives: [
         PROGRESSBAR_DIRECTIVES, TOOLTIP_DIRECTIVES
-    ]
+    ],
+    styleUrls: ['player.css']
 })
 export class Player extends events.EventEmitter
 {
@@ -137,17 +138,32 @@ export class Player extends events.EventEmitter
 
     private playAhead(event:any) : void
     {
-        function clickPercent(event:any, element:any) {
-            return (event.pageX - element.offsetLeft) / element.clientWidth;
+        // Calculate the precentage through the bar we clicked
+        function clickPercent(event:any, element:any, offset_left:number) {
+            return (event.pageX - offset_left) / element.clientWidth;
         }
+        // Find the primary element of the bar
         var element = event.target;
         while(element.className != "progress")
         {
             element = element.parentNode;
         }
-        var precentage = clickPercent(event, element);
+        // Calculate the total offset, from the left of the page
+        var total_offset = 0;
+        var offset_element = element;
+        while(offset_element.offsetParent)
+        {
+            total_offset += offset_element.offsetLeft;
+            offset_element = offset_element.offsetParent;
+        }
+        // Find the percentage through
+        var precentage = clickPercent(event, element, total_offset);
         // Update media player, and in turn the progress bar
-        this.media_player.nativeElement.currentTime = this.max * precentage;
+        // Note: We can only update the player, if max is not infinity
+        if(this.max != Infinity)
+        {
+            this.media_player.nativeElement.currentTime = this.max * precentage;
+        }
     }
 
     private updateVolume() : void
