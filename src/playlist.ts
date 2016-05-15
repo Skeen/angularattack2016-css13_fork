@@ -30,12 +30,15 @@ export class Playlist extends events.EventEmitter
 	{		
 		this.songs.push(song);
 		this.emit('addSong');
-
 	}
 
 	public changeSong(index:number): void
 	{
-		this.emit("changingSong");
+		this.emit("changingSong", index, this.songs[index]);
+    }
+
+    public setActive(index:number): void
+    {
 		var newSong = this.songs[index];
 		if(newSong)
 		{
@@ -45,11 +48,11 @@ export class Playlist extends events.EventEmitter
 		}
 		else
 		{	
+            alert("No song found!");
 			// No song found at given index.
 			// TODO: error handling?
 		}
 		this.emit("changedSong");
-
 	}
 
 	public getSong(): Song
