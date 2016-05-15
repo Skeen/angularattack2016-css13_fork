@@ -5,8 +5,36 @@
 			<i *ngIf="i == getSongIndex()" class="fa fa-angle-right" aria-hidden="true"></i>
 			<i *ngIf="i == getChangeSongIndex()" class="fa fa-circle-o-notch fa-spin fa-fw" aria-hidden="true"></i>
 		</div>
-		<div class="col-ms-3">{{song.title}}</div>
-		<div class="col-ms-3">{{song.albumName}}</div>
-		<div class="col-ms-3">{{song.artistNames[0]}}</div>	
+		<div class="col-ms-2">{{song.title}}</div>
+		<div class="col-ms-2">{{song.albumName}}</div>
+		<div class="col-ms-2">{{song.artistNames[0]}}</div>
+		<div class="col-ms-1">
+			<a [href]="seed.magnetURI" target="_blank"
+                       tooltipPopupDelay='1000' tooltip='Magnet URI'>
+                <i class="fa fa-magnet" aria-hidden="true"></i>
+            </a>
+		</div>
+		<div class="col-ms-1">
+			<a [href]="seed.blobURL" target="_blank" download="{{seed.name}}.torrent"
+                       tooltipPopupDelay='1000' tooltip='Download .torrent'>
+                <i class="fa fa-download" aria-hidden="true"></i>
+            </a>
+		</div>
+		<div class="col-ms-1">
+			Speed: {{seed.upload_speed/1000 | number:'.1-1'}} kB/sec
+		</div>
+		<div class="col-ms-1">
+			Uploaded: {{seed.bytes_upladed/1000 | number:'1-1'}} kB
+		</div>
+		<div class="col-ms-1">
+			Peers: #{{seed.num_peers}}
+		</div>
+		<div class="col-ms-1">
+		   	<button type="button"
+        		[disabled]="seed.song == undefined"
+            	(click)="add_to_playlist(seed)">
+                	<i class="fa fa-plus" aria-hidden="true"></i>
+            </button>
+		</div>
 	</div>
 </div>

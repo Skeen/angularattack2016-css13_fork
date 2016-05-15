@@ -11,6 +11,7 @@ export class LocalContent extends Playlist
 	private storageKeys:string[] = [];
 
 	protected songs:Song[] = [];
+	private seeding: any = [];
 
 	constructor()
 	{
@@ -81,6 +82,7 @@ export class LocalContent extends Playlist
 		if(!key)
 		{
 			this.songs = songs;
+			this.updateSeedList();
 			callback(undefined, this.songs);
 			return;
 		}
@@ -95,4 +97,65 @@ export class LocalContent extends Playlist
 				this.getSongsRec(songs, callback);
 			}.bind(this));
 	}
+
+	private updateSeedList()
+	{
+		this.getSongs(function(err?:any, songs?:Song[])
+		{
+			if(err || !songs)
+			{
+				//TODO: handle this error
+				alert("Unable to get songs from local storage");
+			}
+
+			for(var song of songs)
+			{
+				var blob: any = song.getBlob();
+                var seed : any = 
+					{
+                        song: song,
+                        upload_speed: 0,
+                        bytes_uploaded: 0,
+                        num_peers: 0
+                    };
+
+                    function update_flow(upload_speed:number, bytes_uploaded:number, num_peers:number)
+                    {
+                        seed.upload_speed = upload_speed;
+                        seed.bytes_uploaded = bytes_uploaded;
+                        seed.num_peers = num_peers;
+                    }
+
+                    blob.name = song.getFileName();
+                    TorrentClient.seed_song(blob, 
+						function(torrent:any)
+                        {
+                            function read_flow_from_torrent()
+                            {
+                                update_flow(torrent.uploadSpeed, torrent.uploaded, torrent.numPeers);
+                            }
+
+                            setInterval(function()
+                            {
+                                read_flow_from_torrent();
+                            }, 1000);
+                            torrent.on('wire', function()
+                            {
+                                read_flow_from_torrent();
+                            });
+                        },
+                        function(name:string, info:string, magnet:string, blobURL:string, query?:string)
+                        {
+                            seed.magnetURI = magnet;
+                            seed.name = name;
+                            seed.info = info;
+                            seed.blobURL = blobURL;
+
+                            this.seeding.push(seed);
+                        }.bind(this));
+			}
+		}.bind(this));
+
+	}
+
 }
