@@ -1,20 +1,88 @@
-<h1>Streamy</h1>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
 
-<form id='magnet' (ngSubmit)="onSubmit()">
-    <label for="torrentId">Download from a magnet link: </label>
-    <input type="text" 
-  [(ngModel)]="magnetURI" placeholder="magnet:" >
-    <button type="submit">Download</button>
-</form>
+    //Calculate the height of <header>
+    //Use outerHeight() instead of height() if have padding
+    var aboveHeight = $('header').outerHeight();
+    log("jquery is running");
+//when scroll
+    $(window).scroll(function(){
 
-<h2>Player</h2>
-<player #player></player>
+        //if scrolled down more than the header’s height
+            if ($(window).scrollTop() > aboveHeight){
 
-<h2>Playlist</h2>
-<playlist #playlist></playlist>
+        // if yes, add “fixed” class to the <nav>
+        // add padding top to the #content (value is same as the height of the nav)
+            $('nav').addClass('fixed').css('top','0').next()
+            .css('padding-top','60px');
 
-<h2>Search</h2>
-<search #search></search>
+            } else {
 
-<h2>Log</h2>
-<div #log></div>
+        // when scroll up or less than aboveHeight, remove the “fixed” class, and the padding-top
+            $('nav').removeClass('fixed').next()
+            .css('padding-top','0');
+            }
+        });
+    });
+</script>
+</head>
+<div id="wrapper">
+<nav>
+    <p><player #player></player></p>
+    </nav>
+    <div id="dummy"></div>
+    <div id="content">
+        <h1>Streamy</h1>
+
+		<form id='magnet' (ngSubmit)="onSubmit()">
+		    <label for="torrentId">Download from a magnet link: </label>
+		    <input type="text" 
+		  [(ngModel)]="magnetURI" placeholder="magnet:" >
+		    <button type="submit">Download</button>
+		</form>
+		<h2>Playlist</h2>
+		<playlist #playlist></playlist>
+
+		<h2>Search</h2>
+		<search #search></search>
+
+		<h2>Log</h2>
+		<div #log></div>
+    </div>
+</div>
+<style>
+#wrapper {
+width:940px;
+margin: 0 auto;
+}
+
+header {
+text-align:center;
+padding:70px 0;
+}
+
+#dummy {
+height :50px;
+}
+
+nav {
+background: ##A9A9A9;
+height: 40px;
+width: 660px;
+margin-left: -10px;
+line-height:50px;
+position: fixed;
+}
+
+#content {
+background: #fff;
+height: 1500px; /* presetting the height */
+box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.fixed {
+      position:fixed;
+}
+</style>
