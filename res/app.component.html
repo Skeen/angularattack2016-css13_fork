@@ -17,52 +17,7 @@
     <playlist #playlist></playlist>
 
     <h2>Downloads</h2>
-    <ul>
-        <li *ngFor="let dl of downloads">
-            <b>{{dl.name}}</b>
-            <ul>
-                <li> Hash: {{dl.info}} </li>
-                <li>
-                    <a [href]="dl.magnetURI" target="_blank"
-                       tooltipPopupDelay='1000' tooltip='Magnet URI'
-                        >
-                        <i class="fa fa-magnet" aria-hidden="true"></i>
-                    </a>
-                </li>
-                <li>
-                    <a [href]="dl.blobURL" target="_blank" download="{{dl.name}}.torrent"
-                       tooltipPopupDelay='1000' tooltip='Download .torrent'
-                        >
-                        <i class="fa fa-download" aria-hidden="true"></i>
-                    </a>
-                </li>
-                <li *ngIf="dl.file_blobURL != undefined">
-                    <a [href]="dl.file_blobURL" target="_blank" download="{{dl.name}}"
-                       tooltipPopupDelay='1000' tooltip='Download {{dl.name}}'
-                        >
-                        <i class="fa fa-file-audio-o" aria-hidden="true"></i>
-                    </a>
-                </li>
-                <li> Progress: {{dl.progress*100 | number:'.1-1'}} % 
-                    <i *ngIf="dl.progress != 1" class="fa fa-cog fa-spin fa-fw"></i>
-                </li>
-                <li> Speed: {{dl.download_speed/1000 | number:'.1-1'}} kB/sec </li>
-                <li> Timeleft: {{dl.time_left/1000 | number:'.1-1'}} sec </li>
-                <li> Add to playlist: 
-                    <button type="button"
-                            [disabled]="dl.song == undefined"
-                            (click)="add_to_playlist(dl)"
-                            >
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-                    </button>
-                </li>
-                <li *ngIf="dl.storedLocally"> <i class="fa fa-hdd-o" aria-hidden="true"></i> Stored locally </li>
-            </ul>
-        </li>
-    </ul>
-    '(Blob URLs only work if the file is loaded from a server.
-        "http//localhost" works.
-        "file://" does not.)
+    <downloads #downloads></downloads>
 
     <h2>Seeding</h2>
     <ul>
