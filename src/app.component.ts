@@ -6,6 +6,7 @@ import {TorrentClient, Song, createSong} from 'music-streamer-library';
 import {Player} from './player';
 import {Playlist} from './playlist';
 import {Search} from './search';
+import {SongInfo} from './songInfo';
 
 import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 

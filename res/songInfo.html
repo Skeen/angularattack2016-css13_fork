@@ -1,0 +1,9 @@
+<div class="albumInfoContainer">
+	<p class="albumInfoName">{{albumName}}
+</div>
+<div class="albumThumbContainer">
+	<img *ngIf="(thumb && (thumb.src))" class="albumThumb" src="{{thumb.src}}"/>
+</div>
+<div class="artistInfoContainer">
+	<p class="artistInfoName" *ngFor="let artistName of artistNames; let i=index">{{artistName}}</p>
+</div>
