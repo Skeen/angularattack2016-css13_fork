@@ -1,4 +1,15 @@
 <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-1">
+            Playing
+        </div>
+        <div class="col-md-3">Song title</div>
+        <div class="col-md-3">Album</div>
+        <div class="col-md-3">Primary Artist</div>
+    </div>
+
+    <hr>
+
     <div class="row" *ngFor="let song of songs; let i=index"
                      (dblclick)="changeSong(i)">
         <div class="col-md-1">

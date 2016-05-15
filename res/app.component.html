@@ -1,16 +1,15 @@
-<div id="wrapper">
-	<nav class="navbar navbar-default fixed"
-         style="width:100%">
-		<div class="container-fluid">
-			<div class="row" style="margin-top:1%; text-align:center">
-				<div class="col-md-10">
-					<p><player #player></player></p>
-				</div>
-				<div class="col-md-2">
-					<search #search [dht]="dht"></search>
-				</div>
-			</div>
-    	</div>
+<nav class="navbar navbar-default fixed"
+     style="width:100%">
+    <div class="container-fluid">
+        <div class="row" style="margin-top:1%; text-align:center">
+            <div class="col-md-10">
+                <p><player #player></player></p>
+            </div>
+            <div class="col-md-2">
+                <search #search [dht]="dht"></search>
+            </div>
+        </div>
+    </div>
 </nav>
 <div style="height: 70px"></div>
 <div id="content">
@@ -59,5 +58,3 @@
     <h2>DropArea</h2>
     <dropArea [dht]="dht"></dropArea>
 </div>
-</div>
-

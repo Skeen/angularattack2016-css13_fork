@@ -1,40 +1,63 @@
 <div class="container-fluid">
+    <div class="row" *ngFor="let seed of seeding;  let i=index"
+         (dblclick)="changeSong(i)">
+        <div class="col-md-1">
+            Add to playlist
+        </div>
+        <div class="col-md-2">Song title</div>
+        <div class="col-md-2">Album</div>
+        <div class="col-md-2">Primary Artist</div>
+        <div class="col-md-1">
+            MagnetLink
+        </div>
+        <div class="col-md-1">
+            Torrent File
+        </div>
+        <div class="col-md-1">
+            Upload Speed
+        </div>
+        <div class="col-md-1">
+            #kB uploaded
+        </div>
+        <div class="col-md-1">
+            # Peers
+        </div>
+    </div>
+
+    <hr>
+
 	<div class="row" *ngFor="let seed of seeding;  let i=index"
 	  				(dblclick)="changeSong(i)">
+        <div class="col-md-1">
+            <button type="button"
+                    [disabled]="seed.song == undefined"
+                    (click)="add_to_playlist(seed)">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+            </button>
+        </div>
+		<div class="col-md-2">{{songs[i].title}}</div>
+		<div class="col-md-2">{{songs[i].albumName}}</div>
+		<div class="col-md-2">{{songs[i].artistNames[0]}}</div>
 		<div class="col-md-1">
-			<i *ngIf="i == getSongIndex()" class="fa fa-angle-right" aria-hidden="true"></i>
-			<i *ngIf="i == getChangeSongIndex()" class="fa fa-circle-o-notch fa-spin fa-fw" aria-hidden="true"></i>
-		</div>
-		<div class="col-ms-2">{{songs[i].title}}</div>
-		<div class="col-ms-2">{{songs[i].albumName}}</div>
-		<div class="col-ms-2">{{songs[i].artistNames[0]}}</div>
-		<div class="col-ms-1">
 			<a [href]="seed.magnetURI" target="_blank"
                        tooltipPopupDelay='1000' tooltip='Magnet URI'>
                 <i class="fa fa-magnet" aria-hidden="true"></i>
             </a>
 		</div>
-		<div class="col-ms-1">
+		<div class="col-md-1">
 			<a [href]="seed.blobURL" target="_blank" download="{{seed.name}}.torrent"
                        tooltipPopupDelay='1000' tooltip='Download .torrent'>
                 <i class="fa fa-download" aria-hidden="true"></i>
             </a>
 		</div>
-		<div class="col-ms-1">
+		<div class="col-md-1">
 			Speed: {{seed.upload_speed/1000 | number:'.1-1'}} kB/sec
 		</div>
-		<div class="col-ms-1">
+		<div class="col-md-1">
 			Uploaded: {{seed.bytes_uploaded/1000 | number:'.1-1'}} kB
 		</div>
-		<div class="col-ms-1">
+		<div class="col-md-1">
 			Peers: #{{seed.num_peers}}
 		</div>
-		<div class="col-ms-1">
-		   	<button type="button"
-        		[disabled]="seed.song == undefined"
-            	(click)="add_to_playlist(seed)">
-                	<i class="fa fa-plus" aria-hidden="true"></i>
-            </button>
-		</div>
-	</div>
+    </div>
 </div>
