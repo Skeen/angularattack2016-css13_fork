@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Storage, Song, sha1} from 'music-streamer-library';
+import {Storage, Song, sha1, TorrentClient} from 'music-streamer-library';
 import {Playlist} from './playlist';
 
 @Component({
