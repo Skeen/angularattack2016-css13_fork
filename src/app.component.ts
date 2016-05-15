@@ -71,47 +71,47 @@ export class AppComponent
 			{
 				var blob: any = song.getBlob();
                 var seed : any = 
-					{
-                        song: song,
-                        upload_speed: 0,
-                        bytes_uploaded: 0,
-                        num_peers: 0
-                    };
+                {
+                    song: song,
+                    upload_speed: 0,
+                    bytes_uploaded: 0,
+                    num_peers: 0
+                };
 
-                    function update_flow(upload_speed:number, bytes_uploaded:number, num_peers:number)
+                function update_flow(upload_speed:number, bytes_uploaded:number, num_peers:number)
+                {
+                    seed.upload_speed = upload_speed;
+                    seed.bytes_uploaded = bytes_uploaded;
+                    seed.num_peers = num_peers;
+                }
+
+                blob.name = song.getFileName();
+                TorrentClient.seed_song(blob, 
+                    function(torrent:any)
                     {
-                        seed.upload_speed = upload_speed;
-                        seed.bytes_uploaded = bytes_uploaded;
-                        seed.num_peers = num_peers;
-                    }
-
-                    blob.name = song.getFileName();
-                    TorrentClient.seed_song(blob, 
-						function(torrent:any)
+                        function read_flow_from_torrent()
                         {
-                            function read_flow_from_torrent()
-                            {
-                                update_flow(torrent.uploadSpeed, torrent.uploaded, torrent.numPeers);
-                            }
+                            update_flow(torrent.uploadSpeed, torrent.uploaded, torrent.numPeers);
+                        }
 
-                            setInterval(function()
-                            {
-                                read_flow_from_torrent();
-                            }, 1000);
-                            torrent.on('wire', function()
-                            {
-                                read_flow_from_torrent();
-                            });
-                        },
-                        function(name:string, info:string, magnet:string, blobURL:string, query?:string)
+                        setInterval(function()
                         {
-                            seed.magnetURI = magnet;
-                            seed.name = name;
-                            seed.info = info;
-                            seed.blobURL = blobURL;
+                            read_flow_from_torrent();
+                        }, 1000);
+                        torrent.on('wire', function()
+                        {
+                            read_flow_from_torrent();
+                        });
+                    },
+                    function(name:string, info:string, magnet:string, blobURL:string, query?:string)
+                    {
+                        seed.magnetURI = magnet;
+                        seed.name = name;
+                        seed.info = info;
+                        seed.blobURL = blobURL;
 
-                            this.seeding.push(seed);
-                        }.bind(this));
+                        this.seeding.push(seed);
+                    }.bind(this));
 			}
 		}.bind(this));
 
