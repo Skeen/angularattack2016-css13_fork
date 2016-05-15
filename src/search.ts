@@ -4,7 +4,7 @@ import events = require('events');
 
 @Component({
 	selector: 'search',
-	templateUrl: 'search.html'
+	templateUrl: 'search.html',
 	styleUrls: ['search.css']
 })
 

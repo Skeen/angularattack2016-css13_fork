@@ -11,7 +11,7 @@ import events = require('events');
     templateUrl: 'player.html',
     directives: [
         PROGRESSBAR_DIRECTIVES, TOOLTIP_DIRECTIVES
-    ]
+    ],
     styleUrls: ['player.css']
 })
 export class Player extends events.EventEmitter
@@ -138,6 +138,7 @@ export class Player extends events.EventEmitter
 
     private playAhead(event:any) : void
     {
+        console.log(event.target);
         function clickPercent(event:any, element:any) {
             return (event.pageX - element.offsetLeft) / element.clientWidth;
         }

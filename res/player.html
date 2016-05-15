@@ -1,3 +1,4 @@
+<div>
 <audio #media_player
   (playing)="onPlay()"
   (pause)="onPause()"
@@ -24,7 +25,6 @@
        [class.fa]="true"
        [class.fa-play]="!playing"
        [class.fa-stop]="playing"
-       [class.fa-lg]="true"
       ></i>
     </button>
   </div>
@@ -36,14 +36,13 @@
     </button>
   </div>
 </div>
+<div id="progress" class="col-md-2">
+<progressbar [value]="value" [max]="max"
+  (click)="playAhead($event)">
+</progressbar>
+</div>
 <div id="button" class="col-md-1">
   <span style="color:black; white-space:nowrap;">{{value | number:'.1-1'}}</span>
-</div>
-<div id="progress" class="col-md-2">
-  <progressbar [value]="value" [max]="max"
-    (click)="playAhead($event)"
-    >
-  </progressbar>
 </div>
 <div id="button" class="col-md-1">
   <span style="color:black; white-space:nowrap;">{{max | number:'.1-1'}}</span>
@@ -92,4 +91,5 @@
       ></i>
     </button>
   </div>
+</div>
 </div>
