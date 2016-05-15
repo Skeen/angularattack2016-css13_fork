@@ -45,11 +45,30 @@ $(document).ready(function() {
 		<h2>Playlist</h2>
 		<playlist #playlist></playlist>
 
-		<h2>Search</h2>
-		<search #search></search>
+	<h2>Downloads</h2>
+	<ul>
+	    <li *ngFor="let dl of downloads">
+	        <b>{{dl.name}}</b>
+	        <ul>
+	            <li> Hash: {{dl.info}} </li>
+	            <li> <a [href]="dl.magnetURI" target="_blank">[Magnet URI]</a></li>
+	            <li> <a [href]="dl.blobURL" target="_blank" download="{{dl.name}}.torrent">[Download .torrent]</a></li>
+	            <li *ngIf="dl.file_blobURL != undefined"> Download full file: <a [href]="dl.file_blobURL" target="_blank" download="{{dl.name}}">{{dl.name}}</a></li>
+	            <li> Progress: {{dl.progress*100 | number:'.1-1'}} % </li>
+	            <li> Speed: {{dl.download_speed/1000 | number:'.1-1'}} kB/sec </li>
+	            <li> Timeleft: {{dl.time_left/1000 | number:'.1-1'}} sec </li>
+	        </ul>
+	    </li>
+	</ul>
+	'(Blob URLs only work if the file is loaded from a server.
+	    "http//localhost" works.
+	    "file://" does not.)
 
-		<h2>Log</h2>
-		<div #log></div>
+	<h2>Search</h2>
+	<search></search>
+
+	<h2>Log</h2>
+	<div #log></div>
     </div>
 </div>
 <style>

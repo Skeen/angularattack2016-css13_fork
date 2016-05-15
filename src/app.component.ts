@@ -29,6 +29,8 @@ export class AppComponent
     @ViewChild('log')
     private log_element : ElementRef;
 
+    private downloads : any = [];
+
     private log(str: any, query?: string) : void
     {
         var p = document.createElement('p');
@@ -36,33 +38,39 @@ export class AppComponent
         this.log_element.nativeElement.appendChild(p);
     }
 
-    private torrent_to_html(name:string, info:string, magnet:string, blobURL:string, query?:string) : void
+    private torrent_to_html(download:any, name:string, info:string, magnet:string, blobURL:string, query?:string) : void
     {
-        this.log('<b>' + name + '</b>' +
-                '<ul>' +
-                    '<li> hash: ' + info + '</li> ' +
-                    '<li> <a href="' + magnet + '" target="_blank">[Magnet URI]</a></li>' +
-                    '<li> <a href="' + blobURL + '" target="_blank" download="' + name + '.torrent">[Download .torrent]</a></li>' +
-                '</ul>'
-            , query);
-        this.log('(Blob URLs only work if the file is loaded from a server.'
-            + '"http//localhost" works.'
-            + '"file://" does not.)');
+        download.magnetURI = magnet;
+        download.name = name;
+        download.info = info;
+        download.blobURL = blobURL;
+        download.download_speed = 0;
+        download.progress = 0;
+        download.time_left = 0;
+   
+        this.downloads.push(download);
     }
 
-    private pullOutMetadata(file: any, magnetURI: string) : void
+    private torrent_progress(download:any, download_speed:number, progress:number, time_left:number)
+    {
+        download.download_speed = download_speed;
+        download.progress = progress;
+        download.time_left = time_left;
+    }
+
+    private pullOutMetadata(download:any, file: any, magnetURI: string) : void
     {
         var stream = file.createReadStream();
         var parser = mm(stream, function(err: any, metadata: any)
         {
             if (err) throw err;
 
-            this.log(JSON.stringify(metadata, null, 4));
-
             var song: Song = createSong(metadata, magnetURI);
             song.setFileName(file.name);
 
-            this.playlist_element.addSong(song);
+            download.song = song;
+
+            // this.playlist_element.addSong(song);
             /*
             file.getBuffer(function(err: any, buffer: any)
             {
@@ -86,33 +94,43 @@ export class AppComponent
         }.bind(this));
     }
 
-    private handleMusicStream(file: any, magnetURI: string) : void
+    private handleMusicStream(download:any, file: any, magnetURI: string) : void
     {
         this.player_element.playSong(file);
-        // Add download URL to log
+        // Add download URL to downloads
         file.getBlobURL(
             function(err: any, url: any)
             {
                 if (err) {
                     return this.log(err.message);
                 }
-                this.log('File done.');
-                this.log('<a href="' + url
-                        + '">Download full file: '
-                        + file.name + '</a>');
-
+                this.torrent_progress(download, 0, 1, 0);
+                download.file_blobURL = url;
             }.bind(this));
-        this.pullOutMetadata(file, magnetURI);
+
+        this.pullOutMetadata(download, file, magnetURI);
     }
 
     private onSubmit() : void
     {
+        var download = {}
         // Get torrent magnet from text input field.
         TorrentClient.download_song(this.magnetURI,
-            this.handleMusicStream.bind(this),
-            this.log.bind(this),
+            function(file:any, magnetURI:string)
+            {
+                this.handleMusicStream(download, file, magnetURI);
+            }.bind(this),
             null,
-            this.torrent_to_html.bind(this));
+            null,
+            function(name:string, info:string, magnet:string, blobURL:string, query?:string)
+            {
+                this.torrent_to_html(download, name, info, magnet, blobURL);
+            }.bind(this),
+            function(download_speed:number, progress:number, time_left:number)
+            {
+                this.torrent_progress(download, download_speed, progress, time_left);
+            }.bind(this)
+            );
     }
 
     constructor()
