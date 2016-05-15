@@ -33,6 +33,9 @@ export class AppComponent
     @ViewChild('playlist')
     private playlist_element : Playlist;
 
+	@ViewChild('localcontent')
+	private localcontent_element : LocalContent;
+
     // List of downloads
     private downloads : any = [];
     private seeding : any = [];
@@ -96,12 +99,20 @@ export class AppComponent
                 }
                 song.setBlob(new Blob([toArrayBuffer(buffer)]));
                 // Provide a copy for storage (addSong is destructive)
-                Storage.addSong(Song.fromJSON(song), function(err: any, sha1: string)
+                /*
+				Storage.addSong(Song.fromJSON(song), function(err: any, sha1: string)
                 {
                     if (err) throw err;
                     download.storedLocally = true;
                 });
-            });
+				*/
+			   	this.localcontent_element.addSong(Song.fromJSON(song), function(err?:any, sha1?:string)
+					{
+						if (err) throw err;
+						download.storedLocally = true;
+					});
+				
+            }.bind(this));
         }.bind(this));
     }
 
@@ -146,8 +157,69 @@ export class AppComponent
             );
     }
 
+	private updateSeedList()
+	{
+		this.localcontent_element.getSongs(function(err?:any, songs?:Song[])
+		{
+			if(err || !songs)
+			{
+				//TODO: handle this error
+				alert("Unable to get songs from local storage");
+			}
+
+			for(var song of songs)
+			{
+				var blob: any = song.getBlob();
+                var seed : any = 
+					{
+                        song: song,
+                        upload_speed: 0,
+                        bytes_uploaded: 0,
+                        num_peers: 0
+                    };
+
+                    function update_flow(upload_speed:number, bytes_uploaded:number, num_peers:number)
+                    {
+                        seed.upload_speed = upload_speed;
+                        seed.bytes_uploaded = bytes_uploaded;
+                        seed.num_peers = num_peers;
+                    }
+
+                    blob.name = song.getFileName();
+                    TorrentClient.seed_song(blob, 
+						function(torrent:any)
+                        {
+                            function read_flow_from_torrent()
+                            {
+                                update_flow(torrent.uploadSpeed, torrent.uploaded, torrent.numPeers);
+                            }
+
+                            setInterval(function()
+                            {
+                                read_flow_from_torrent();
+                            }, 1000);
+                            torrent.on('wire', function()
+                            {
+                                read_flow_from_torrent();
+                            });
+                        },
+                        function(name:string, info:string, magnet:string, blobURL:string, query?:string)
+                        {
+                            seed.magnetURI = magnet;
+                            seed.name = name;
+                            seed.info = info;
+                            seed.blobURL = blobURL;
+
+                            this.seeding.push(seed);
+                        }.bind(this));
+			}
+		}.bind(this));
+
+	}
+
     constructor()
     {
+				/*
         // Seed all local content
         Storage.getKeys(function(err: any, keys: string[])
         {
@@ -210,7 +282,10 @@ export class AppComponent
                 }.bind(this))(lookup_key);
             }
         }.bind(this));
+		*/
     }
+
+
 
     ngAfterViewInit()
     {
@@ -265,5 +340,7 @@ export class AppComponent
                 this.playlist_element.nextSong(repeat_all);
             }
         }.bind(this));
+
+		this.updateSeedList();
     }
 }

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Storage, Song} from 'music-streamer-library';
+import {Storage, Song, sha1} from 'music-streamer-library';
 import {Playlist} from './playlist';
 
 @Component({
@@ -18,20 +18,38 @@ export class LocalContent extends Playlist
 		super.setName("Local Content");
 	}
 
-	public addSong(song:Song): void
+	private hasDuplicate(hash:string): boolean
+	{		
+		if(this.storageKeys.indexOf(hash) == -1)
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	public addSong(song:Song, callback?:any): void
 	{
+		var storedSong:Song = song;
 		//add to storage first
-		Storage.addSong(song, function(err?:any, value?:string)
+		Storage.addSong(storedSong, function(err?:any, value?:string)
 			{
 				if(err || !value)
 				{
 					//TODO: handle error properly
 				}
-				this.songs.push();
+				if(!(this.hasDuplicate(value)))
+				{
+					this.songs.push(song);
+					this.emit('addSong');
+				}
+				if(callback)
+				{
+					callback(err, value);
+				}
 			}.bind(this));	
 	}
 
-	public updateKeys(): void
+	public getKeys(callback?:any): void
 	{
 		Storage.getKeys(function(err?:any, keys?:string[])
 			{
@@ -41,86 +59,40 @@ export class LocalContent extends Playlist
 					alert("Error getting list of stored items!");
 				}
 				this.storageKeys = keys;
+				if(callback)
+				{
+					callback(undefined, keys);
+				}
 			}.bind(this));
 	}
 
-	public updateSong(): void
+	public getSongs(callback?:any): void
 	{
-		var songs:Song[] = [];
-		for(var i = 0; i < this.storageKeys.length; i++)
+		this.getKeys(function(err?:any, keys?:string[])
+			{
+				this.getSongsRec([], callback);
+			}.bind(this));
+	}
+
+	private getSongsRec(songs:Song[], callback?:any):void
+	{		
+		var next:number = songs.length;
+		var key:string = this.storageKeys[next];
+		if(!key)
 		{
-			var key = this.storageKeys[i];
-			Storage.getSong(key, function(err?:any, song?:Song)
-				{
-					if(err || !song)
-					{
-						//TODO: Handle error properly
-						alert("Error getting song from storage!");
-					}
-					songs[i] = song;
-				}.bind(this));
+			this.songs = songs;
+			callback(undefined, this.songs);
+			return;
 		}
-		this.songs = songs;
+		Storage.getSong(key, function(err?:any, song?:Song)
+			{
+				if(err || !song)
+				{
+					//TODO: Handle error properly
+					alert("Error getting song from storage!");
+				}
+				songs.push(song);
+				this.getSongsRec(songs, callback);
+			}.bind(this));
 	}
 }
-
-/*
-	public changeSong(index:number): void
-	{
-		this.changeSongIndex = index;
-		this.emit("changingSong", index, this.song[index]);
-	}
-
-	public setActive(index:number): void
-	{
-		this.changeSongIndex = undefined;
-		var newSong = this.songs[index]
-		if(newSong)
-		{	
-			// Song has a blob object
-			this.currentSongIndex = index;
-			this.currentSong = newSong;	
-		}
-		else
-		{
-			alert("No song found in local content!");
-			// TODO: handle error properly.
-		}
-		this.emit("changedSong");
-
-	}
-
-	public getSongIndex(index:number): void
-	{
-		return this.currentSongIndex;
-	}
-
-	public getChangeSongIndex(index:number): void
-	{
-		return this.changeSongIndex;
-	}
-
-	public sameSong(): void
-	{
-		this.changeSong(this.currentSongIndex);
-	}
-
-	public nextSong(repeat_list:boolean): void
-	{
-		var nextSongIndex = this.currentSongIndex + 1;
-		if(nextSongIndex >= this.songs.length)
-		{
-			if(repeat_list)
-			{
-				nextSongIndex = 0;
-			}
-			else
-			{
-				// TODO: Output ng2-bootstrap alert
-				console.log("No more songs!");
-				return
-			}
-		}
-		this.changeSong(nextSongIndex);
-	}
-*/
