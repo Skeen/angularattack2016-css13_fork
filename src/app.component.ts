@@ -59,6 +59,13 @@ export class AppComponent
         download.time_left = time_left;
     }
 
+    // TODO: Add DHT code
+    // TODO: Add replication code
+    // TODO: Add searching
+    // TODO: Add search results
+    // TODO: Seed local content
+    // TODO: Allow uploading local content
+
     private pullOutMetadata(download:any, file: any, magnetURI: string) : void
     {
         var stream = file.createReadStream();
@@ -88,6 +95,15 @@ export class AppComponent
                     return ab;
                 }
                 song.setBlob(new Blob([toArrayBuffer(buffer)]));
+                // TODO: Add to local storage
+                /*
+                Storage.addSong(song, function(err: any, sha1: string)
+                {
+                    if (err) throw err;
+                    log('Added song to storage!');
+                    // TODO: Handle this event
+                });
+                */
             });
 
         }.bind(this));
