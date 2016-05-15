@@ -38,7 +38,7 @@ export class SongInfo
 	{
 		this.albumName = song.getAlbumName();
 		//TODO: fix typo ger
-		this.artistNames = song.gerArtistNames();
+		this.artistNames = song.getArtistNames();
 		//
 		//TODO: get album thumbnail and use it
 	}
