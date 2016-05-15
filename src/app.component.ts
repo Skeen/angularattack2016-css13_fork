@@ -38,6 +38,11 @@ export class AppComponent
         this.log_element.nativeElement.appendChild(p);
     }
 
+    private add_to_playlist(download:any)
+    {
+        this.playlist_element.addSong(download.song);
+    }
+
     private torrent_to_html(download:any, name:string, info:string, magnet:string, blobURL:string, query?:string) : void
     {
         download.magnetURI = magnet;
@@ -67,11 +72,11 @@ export class AppComponent
 
             var song: Song = createSong(metadata, magnetURI);
             song.setFileName(file.name);
-
+            // Set stream (used untill blob is ready)
+            song.setStream(file);
             download.song = song;
 
-            // this.playlist_element.addSong(song);
-            /*
+            // TODO: Replace with getBlob from file (pull request WebTorrent)
             file.getBuffer(function(err: any, buffer: any)
             {
                 if (err) throw err;
@@ -87,16 +92,13 @@ export class AppComponent
                     return ab;
                 }
                 song.setBlob(new Blob([toArrayBuffer(buffer)]));
-
-                // Save blob somewhere
             });
-            */
+
         }.bind(this));
     }
 
     private handleMusicStream(download:any, file: any, magnetURI: string) : void
     {
-        this.player_element.playSong(file);
         // Add download URL to downloads
         file.getBlobURL(
             function(err: any, url: any)
@@ -139,9 +141,12 @@ export class AppComponent
 
     ngAfterViewInit()
     {
-        this.playlist_element.on('changeSong', function()
+        this.playlist_element.on('changingSong', function(index:number, new_song:Song)
         {
-            alert("changed song!");
-        });
+            this.player_element.playSong(new_song.getRenderable(), function()
+            {
+                this.playlist_element.setActive(index);
+            }.bind(this));
+        }.bind(this));
     }
 }

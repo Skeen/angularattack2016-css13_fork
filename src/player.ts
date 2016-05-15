@@ -43,12 +43,14 @@ export class Player extends events.EventEmitter
         this.playing = false;
 	}
 
-    public playSong(data_source:any) : void
+    public playSong(data_source:any, callback:any) : void
     {
         this.rendermedia.render(data_source, this.media_player.nativeElement,
             function(err: any, elem: any)
             {
                 if (err) throw err;
+                // Fire callback when playback starts
+                callback();
             }
         );
     }

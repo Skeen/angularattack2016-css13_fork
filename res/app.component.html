@@ -25,6 +25,14 @@
             <li> Progress: {{dl.progress*100 | number:'.1-1'}} % </li>
             <li> Speed: {{dl.download_speed/1000 | number:'.1-1'}} kB/sec </li>
             <li> Timeleft: {{dl.time_left/1000 | number:'.1-1'}} sec </li>
+            <li> Add to playlist: 
+                <button type="button"
+                        [disabled]="dl.song == undefined"
+                        (click)="add_to_playlist(dl)"
+                        >
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+            </li>
         </ul>
     </li>
 </ul>
