@@ -11,17 +11,16 @@ import {SongInfo} from './songInfo';
 import {PlaylistControl} from './playlist_control';
 import {DropArea} from './droparea';
 import {LocalContent} from './localcontent';
+import {Downloads} from './downloads';
 
 import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
-
-var mm = require('musicmetadata')
 
 @Component({
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
         Player, Playlist, Search, SongInfo, PlaylistControl, DropArea,
-		LocalContent,
+		LocalContent, Downloads,
 		TOOLTIP_DIRECTIVES    
 	],
 	styleUrls: ['playlist.css']
@@ -38,33 +37,13 @@ export class AppComponent
 
 	@ViewChild('localcontent')
 	private localcontent_element : LocalContent;
+
+	@ViewChild('downloads')
+	private downloads_element : Downloads;
+
     private dht : HashTable;
 
-    // List of downloads
-    private downloads : any = [];
     private seeding : any = [];
-
-    private add_to_playlist(download:any)
-    {
-        this.playlist_element.addSong(download.song);
-    }
-
-    private torrent_to_html(download:any, name:string, info:string, magnet:string, blobURL:string, query?:string) : void
-    {
-        download.magnetURI = magnet;
-        download.name = name;
-        download.info = info;
-        download.blobURL = blobURL;
-   
-        this.downloads.push(download);
-    }
-
-    private torrent_progress(download:any, download_speed:number, progress:number, time_left:number)
-    {
-        download.download_speed = download_speed;
-        download.progress = progress;
-        download.time_left = time_left;
-    }
 
     // TODO: Add DHT code
     // TODO: Add replication code
@@ -72,93 +51,10 @@ export class AppComponent
     // TODO: Add search results
     // TODO: Seed local content
     // TODO: Allow uploading local content
-
-    private pullOutMetadata(download:any, file: any, magnetURI: string) : void
-    {
-        var stream = file.createReadStream();
-        var parser = mm(stream, function(err: any, metadata: any)
-        {
-            if (err) throw err;
-
-            var song: Song = createSong(metadata, magnetURI);
-            song.setFileName(file.name);
-            // Set stream (used untill blob is ready)
-            song.setStream(file);
-            download.song = song;
-
-            // TODO: Replace with getBlob from file (pull request WebTorrent)
-            file.getBuffer(function(err: any, buffer: any)
-            {
-                if (err) throw err;
-
-                function toArrayBuffer(buffer: any)
-                {
-                    var ab = new ArrayBuffer(buffer.length);
-                    var view = new Uint8Array(ab);
-                    for (var i = 0; i < buffer.length; ++i) 
-                    {
-                        view[i] = buffer[i];
-                    }
-                    return ab;
-                }
-                song.setBlob(new Blob([toArrayBuffer(buffer)]));
-                // Provide a copy for storage (addSong is destructive)
-                /*
-				Storage.addSong(Song.fromJSON(song), function(err: any, sha1: string)
-                {
-                    if (err) throw err;
-                    download.storedLocally = true;
-                });
-				*/
-			   	this.localcontent_element.addSong(Song.fromJSON(song), function(err?:any, sha1?:string)
-					{
-						if (err) throw err;
-						download.storedLocally = true;
-					});
-				
-            }.bind(this));
-        }.bind(this));
-    }
-
-    private handleMusicStream(download:any, file: any, magnetURI: string) : void
-    {
-        // Add download URL to downloads
-        file.getBlobURL(
-            function(err: any, url: any)
-            {
-                if (err) {
-                    alert(err.message);
-                }
-                this.torrent_progress(download, 0, 1, 0);
-                download.file_blobURL = url;
-            }.bind(this));
-
-        this.pullOutMetadata(download, file, magnetURI);
-    }
-
+    
     private onSubmit() : void
     {
-        var download = {
-            download_speed: 0,
-            progress: 0,
-            time_left: 0
-        }
-        // Get torrent magnet from text input field.
-        TorrentClient.download_song(this.magnetURI,
-            function(file:any, magnetURI:string)
-            {
-                this.handleMusicStream(download, file, magnetURI);
-            }.bind(this),
-            null,
-            function(name:string, info:string, magnet:string, blobURL:string, query?:string)
-            {
-                this.torrent_to_html(download, name, info, magnet, blobURL);
-            }.bind(this),
-            function(download_speed:number, progress:number, time_left:number)
-            {
-                this.torrent_progress(download, download_speed, progress, time_left);
-            }.bind(this)
-            );
+        this.downloads_element.downloadSong(this.magnetURI);
     }
 
 	private updateSeedList()
@@ -226,8 +122,6 @@ export class AppComponent
         this.dht = new HTTP_HashTable();
     }
 
-
-
     ngAfterViewInit()
     {
         this.playlist_element.on('changingSong', function(index:number, new_song:Song)
@@ -280,6 +174,23 @@ export class AppComponent
                 var repeat_all = this.player_element.getRepeatAll();
                 this.playlist_element.nextSong(repeat_all);
             }
+        }.bind(this));
+
+        // added is a callback function
+        this.downloads_element.on('downloaded', function(song : Song, added : any)
+        {
+            // localcontent.addSong is destructive
+            var copy : Song = Song.fromJSON(song);
+            this.localcontent_element.addSong(copy, function(err?:any, sha1?:string)
+            {
+                if (err) throw err;
+                added();
+            });
+        }.bind(this));
+
+        this.downloads_element.on('add-song', function(song : Song)
+        {
+            this.playlist_element.addSong(song);
         }.bind(this));
 
 		this.updateSeedList();
