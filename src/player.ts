@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
 import {PROGRESSBAR_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
+import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
 import events = require('events');
 
@@ -9,7 +10,7 @@ import events = require('events');
     selector: 'player',
     templateUrl: 'player.html',
     directives: [
-        PROGRESSBAR_DIRECTIVES
+        PROGRESSBAR_DIRECTIVES, TOOLTIP_DIRECTIVES
     ]
 })
 export class Player extends events.EventEmitter
@@ -27,7 +28,7 @@ export class Player extends events.EventEmitter
     private playing:boolean;
     private muted:boolean;
 
-    private volume:number = 100;
+    private volume:number = 1;
 
     public max:number = Infinity;
     public value:number = 0;
