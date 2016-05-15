@@ -149,16 +149,11 @@ export class AppComponent
         {
             this.playlist_element.addSong(song);
         }.bind(this));
-<<<<<<< HEAD
-=======
 
         this.search_element.on('song-select', function(song : Song)
         {
             console.log(song);
             this.search_result = song;
         }.bind(this));
-
-		this.updateSeedList();
->>>>>>> 833864afdfb7228b1703f3a8b22c92d14bbe8c37
     }
 }
