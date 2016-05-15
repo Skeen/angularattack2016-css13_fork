@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
-import {TorrentClient, Song, createSong} from 'music-streamer-library';
+import {TorrentClient, Song, Storage, createSong} from 'music-streamer-library';
 
 import {Player} from './player';
 import {Playlist} from './playlist';
@@ -95,17 +95,13 @@ export class AppComponent
                     return ab;
                 }
                 song.setBlob(new Blob([toArrayBuffer(buffer)]));
-                // TODO: Add to local storage
-                /*
+
                 Storage.addSong(song, function(err: any, sha1: string)
                 {
                     if (err) throw err;
-                    log('Added song to storage!');
-                    // TODO: Handle this event
+                    download.storedLocally = true;
                 });
-                */
             });
-
         }.bind(this));
     }
 
