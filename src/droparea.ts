@@ -30,6 +30,7 @@ export class DropArea
 
     addSongToDHT(song : Song, hash_table : HashTable) : void
     {
+        song.setBlob(null);
         hash_table.put_raw(song.getTitle(), JSON.stringify({type: "song", payload: song}), function(err, value)
         {
             if(err)
@@ -70,7 +71,7 @@ export class DropArea
                                 if (err) throw err;
                             });
 
-                            this.addSongToDHT(song, this.dht);
+                            this.addSongToDHT(Song.fromJSON(song), this.dht);
 /*
                             function read_flow_from_torrent()
                             {
