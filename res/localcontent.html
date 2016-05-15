@@ -1,6 +1,5 @@
 <div class="container-fluid">
-    <div class="row" *ngFor="let seed of seeding;  let i=index"
-         (dblclick)="changeSong(i)">
+    <div class="row">
         <div class="col-md-1">
             Add to playlist
         </div>
@@ -51,13 +50,13 @@
             </a>
 		</div>
 		<div class="col-md-1">
-			Speed: {{seed.upload_speed/1000 | number:'.1-1'}} kB/sec
+			{{seed.upload_speed/1000 | number:'.1-1'}} kB/sec
 		</div>
 		<div class="col-md-1">
-			Uploaded: {{seed.bytes_uploaded/1000 | number:'.1-1'}} kB
+			{{seed.bytes_uploaded/1000 | number:'.1-1'}} kB
 		</div>
 		<div class="col-md-1">
-			Peers: #{{seed.num_peers}}
+			#{{seed.num_peers}}
 		</div>
     </div>
 </div>

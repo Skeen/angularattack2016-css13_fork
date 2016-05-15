@@ -132,29 +132,45 @@ export class LocalContent extends Playlist
             };
 		blob.name = song.getFileName();
 		this.seeding[i] = seed;
+
+        function update_seed_values(upload_speed?:number, bytes_uploaded?:number, num_peers?:number)
+        {
+            if(upload_speed != null)
+                seed.upload_speed = upload_speed;
+            if(bytes_uploaded != null)
+                seed.bytes_uploaded = bytes_uploaded;
+            if(num_peers != null)
+                seed.num_peers = num_peers;
+        }
+
 		TorrentClient.seed_song(blob,
 			function(torrent:any)
 			{
+                function update_seed_values_torrent()
+                {
+                    update_seed_values(torrent.upload_speed, torrent.bytes_uploaded, torrent.num_peers);
+                }
+
 				setInterval(function()
                 {
-                    this.seeding[i].upload_speed = torrent.upload_speed || 0;
-        			this.seeding[i].bytes_uploaded = torrent.bytes_uploaded || 0;
-        			this.seeding[i].num_peers = torrent.num_peers || 0;
-                }.bind(this), 1000);
+                    update_seed_values(0,null,0);
+                    update_seed_values_torrent();
+                }, 1000);
+
                 torrent.on('wire', function()
                 {
-					this.seeding[i].upload_speed = torrent.upload_speed || 0;
-        			this.seeding[i].bytes_uploaded = torrent.bytes_uploaded || 0;
-        			this.seeding[i].num_peers = torrent.num_peers || 0;
-				}.bind(this));
-			}.bind(this),
+                    update_seed_values_torrent();
+				});
+			},
 			function(name:string, info:string, magnet:string, blobURL:string, query?:string)
             {
-                this.seeding[i].magnetURI = magnet || "";
-                this.seeding[i].name = name || "";
-                this.seeding[i].info = info || "";
-                this.seeding[i].blobURL = blobURL || "";
-			}.bind(this));
+                seed.magnetURI = magnet || "";
+                seed.name = name || "";
+                seed.info = info || "";
+                seed.blobURL = blobURL || "";
+			}.bind(this),
+            update_seed_values
+        );
 	}
 
     private add_to_playlist(seed:any)
