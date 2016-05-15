@@ -5,7 +5,8 @@ import events = require('events');
 
 @Component({
 	selector: 'playlist',
-	templateUrl: 'playlist.html'
+	templateUrl: 'playlist.html',
+	styleUrls: ['playlist.css']
 })
 
 export class Playlist extends events.EventEmitter

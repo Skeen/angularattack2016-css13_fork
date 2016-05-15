@@ -22,7 +22,8 @@ var mm = require('musicmetadata')
         Player, Playlist, Search, SongInfo, PlaylistControl,
 		LocalContent,
 		TOOLTIP_DIRECTIVES    
-	]
+	],
+	styleUrls: ['playlist.css']
 })
 export class AppComponent
 {

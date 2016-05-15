@@ -9,6 +9,7 @@ import events = require('events');
 @Component({
 	selector: 'search',
 	templateUrl: 'search.html',
+	styleUrls: ['search.css'],
     directives: [
         TYPEAHEAD_DIRECTIVES
     ]

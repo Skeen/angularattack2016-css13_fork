@@ -8,6 +8,7 @@ import events = require('events');
 @Component({
 	selector: 'playlist_control',
 	templateUrl: 'playlist_control.html',
+	styleUrls: ['playlist_control.css'],
 	directives:[TAB_DIRECTIVES],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
