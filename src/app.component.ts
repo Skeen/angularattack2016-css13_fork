@@ -7,6 +7,7 @@ import {Player} from './player';
 import {Playlist} from './playlist';
 import {Search} from './search';
 import {SongInfo} from './songInfo';
+import {PlaylistControl} from './playlist_control';
 
 var mm = require('musicmetadata')
 
@@ -14,7 +15,7 @@ var mm = require('musicmetadata')
     selector: 'my-app',
     templateUrl: 'app.component.html',
     directives: [
-        Player, Playlist, Search
+        Player, Playlist, Search, SongInfo, PlaylistControl
     ]
 })
 export class AppComponent

@@ -26,6 +26,11 @@ export class Playlist extends events.EventEmitter
 		this.emit('ready');
 	}
 
+	public setName(name:string): void
+	{
+		this.name = name;
+	}
+
 	public addSong(song:Song): void
 	{		
 		this.songs.push(song);
