@@ -1,0 +1,28 @@
+#button{
+  display: inline-block;
+}
+#buttongroup{
+  display: inline-block;
+}
+#progress{
+  display: inline-block;
+}
+#volume{
+   display: inline-block;
+}
+#previous{
+  display: inline-block;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.pushed_in {
+    color: red;
+}
+
+.progress_number {
+    vertical-align: top;
+    font-size: 20;
+}

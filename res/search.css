@@ -1,0 +1,11 @@
+.searchform{
+    vertical-align: middle;
+    white-space: nowrap;
+    position: relative;
+}
+.searchform .search{
+    display: inline-block;
+}
+.searchform .icon{
+    color: #4f5b66;
+}

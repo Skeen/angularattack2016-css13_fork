@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 
 import {TYPEAHEAD_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
-import {HashTable} from 'music-streamer-library';
+import {HashTable, Song} from 'music-streamer-library';
 
 import events = require('events');
 
@@ -12,7 +12,8 @@ import events = require('events');
 	styleUrls: ['search.css'],
     directives: [
         TYPEAHEAD_DIRECTIVES
-    ]
+    ],
+	styleUrls: ['search.css']
 })
 export class Search extends events.EventEmitter
 {
@@ -81,8 +82,12 @@ export class Search extends events.EventEmitter
         this.typeaheadNoResults = e;
     }
 
-    public typeaheadOnSelect(e:any):void {
+    public typeaheadOnSelect(e:any):void
+    {
+        /*
         console.log(`Selected value: ${e.item}`);
         console.log(this.map[e.item]);
+        */
+        this.emit('song-select', Song.fromJSON(this.map[e.item]));
     }
 }

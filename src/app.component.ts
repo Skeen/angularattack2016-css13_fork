@@ -23,7 +23,7 @@ import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 		LocalContent, Downloads,
 		TOOLTIP_DIRECTIVES    
 	],
-	styleUrls: ['playlist.css']
+    styleUrls: ['app.component.css']
 })
 export class AppComponent
 {
@@ -41,7 +41,12 @@ export class AppComponent
 	@ViewChild('downloads')
 	private downloads_element : Downloads;
 
+	@ViewChild('search')
+	private search_element : Search;
+
     private dht : HashTable;
+
+    private search_result : Song;
 
     private seeding : any = [];
 
@@ -54,13 +59,18 @@ export class AppComponent
     
     private onSubmit() : void
     {
-        this.downloads_element.downloadSong(this.magnetURI);
+        this.download_song(this.magnetURI);
+    }
+
+    private download_song(magnetURI:string) : void
+    {
+        this.downloads_element.downloadSong(magnetURI);
     }
 	
 
     constructor()
     {
-        this.dht = new HTTP_HashTable();
+        this.dht = new HTTP_HashTable("http://46.101.162.151:3000/");
     }
 
     ngAfterViewInit()
@@ -139,5 +149,16 @@ export class AppComponent
         {
             this.playlist_element.addSong(song);
         }.bind(this));
+<<<<<<< HEAD
+=======
+
+        this.search_element.on('song-select', function(song : Song)
+        {
+            console.log(song);
+            this.search_result = song;
+        }.bind(this));
+
+		this.updateSeedList();
+>>>>>>> 833864afdfb7228b1703f3a8b22c92d14bbe8c37
     }
 }

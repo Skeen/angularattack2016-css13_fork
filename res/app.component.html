@@ -1,8 +1,18 @@
 <div id="wrapper">
-<nav>
-    <p><player #player></player></p>
+	<nav class="navbar navbar-default fixed"
+         style="width:100%">
+		<div class="container-fluid">
+			<div class="row" style="margin-top:1%; text-align:center">
+				<div class="col-md-10">
+					<p><player #player></player></p>
+				</div>
+				<div class="col-md-2">
+					<search #search [dht]="dht"></search>
+				</div>
+			</div>
+    	</div>
 </nav>
-<div id="dummy"></div>
+<div style="height: 70px"></div>
 <div id="content">
     <h1>Streamy</h1>
 
@@ -13,14 +23,29 @@
         <button type="submit">Download</button>
     </form>
 
+    <h2>Search result</h2>
+    <div *ngIf="search_result">
+    <b>{{search_result.title}}</b> 
+    <ul>
+        <li>Album: {{search_result.albumName}}</li>
+        <li *ngFor="let artist of search_result.artistNames">
+            Artist: {{artist}}
+        </li>
+        <button type="button"
+                class="btn btn-primary"
+                (click)="download_song(search_result.magnet)"
+                >
+            <i class="fa fa-download" aria-hidden="true"></i>
+            Download Song
+        </button>
+    </ul>
+    </div>
+
     <h2>Playlist</h2>
     <playlist #playlist></playlist>
 
     <h2>Downloads</h2>
     <downloads #downloads></downloads>
-
-    <h2>Search</h2>
-    <search [dht]="dht"></search>
 
 	<h2>Local</h2>
 	<localcontent #localcontent></localcontent>
@@ -36,37 +61,3 @@
 </div>
 </div>
 
-<style>
-#wrapper {
-    width:940px;
-    margin: 0 auto;
-}
-
-header {
-    text-align:center;
-    padding:70px 0;
-}
-
-#dummy {
-    height :50px;
-}
-
-nav {
-    background: ##A9A9A9;
-    height: 40px;
-    width: 660px;
-    margin-left: -10px;
-    line-height:50px;
-    position: fixed;
-}
-
-#content {
-    background: #fff;
-    height: 1500px; /* presetting the height */
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
-}
-
-.fixed {
-      position:fixed;
-}
-</style>
