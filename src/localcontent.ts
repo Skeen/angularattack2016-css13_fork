@@ -155,6 +155,10 @@ export class LocalContent extends Playlist
                 this.seeding[i].info = info || "";
                 this.seeding[i].blobURL = blobURL || "";
 			}.bind(this));
-
 	}
+
+    private add_to_playlist(seed:any)
+    {
+        this.emit('add-song', seed.song);
+    }
 }

@@ -107,6 +107,15 @@ export class Downloads extends events.EventEmitter
 
     public downloadSong(magnetURI:string) : void
     {
+        var abort:boolean = false;
+        this.downloads.forEach(function(obj:any)
+        {
+            if(obj.magnetURI == magnetURI)
+                abort = true;
+        });
+        if(abort)
+            return;
+
         var download = {
             download_speed: 0,
             progress: 0,
