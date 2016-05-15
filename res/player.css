@@ -6,15 +6,23 @@
 }
 #progress{
   display: inline-block;
-  min-width: 200px
 }
 #volume{
    display: inline-block;
-  min-width: 100px
 }
 #previous{
   display: inline-block;
 }
+
+.inline {
+  display: inline-block;
+}
+
 .pushed_in {
-    color: green;
+    color: red;
+}
+
+.progress_number {
+    vertical-align: top;
+    font-size: 20;
 }

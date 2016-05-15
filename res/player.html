@@ -9,16 +9,20 @@
   (durationchange)="updateDuration()"
   (volumechange)="updateVolume()"
 ></audio>
-<div class="col-md-2">
-  <div id="previous" class="col-md-4">
+
+<div class="col-md-2 btn-group">
+
     <button type="button"
+            class="btn btn-primary"
+            style="width:25%"
         (click)="prevSong()"
     >
     <i class="fa fa-step-backward fa-lg" aria-hidden="true"></i>
     </button>
-  </div>
-  <div id="button" class="col-md-4">
+
     <button type="button"
+            class="btn btn-primary"
+            style="width:50%"
       (click)="flip_playing()"
       >
       <i aria-hidden="true"
@@ -27,57 +31,37 @@
        [class.fa-stop]="playing"
       ></i>
     </button>
-  </div>
-  <div id="button" class="col-md-4">
+
     <button type="button"
+            class="btn btn-primary"
+            style="width:25%"
         (click)="nextSong()"
       >
       <i class="fa fa-step-forward fa-lg" aria-hidden="true"></i>
     </button>
-  </div>
 </div>
-<div id="progress" class="col-md-2">
-<progressbar [value]="value" [max]="max"
+
+<div class="col-md-7">
+<div style="width:10%" class="inline progress_number">
+  <span style="color:black; white-space:nowrap;">{{value | number:'.1-1'}}</span>
+</div>
+
+<div id="progress" style="width:75%">
+<progressbar [value]="value" [max]="max" 
+                   class="progress-striped active" 
   (click)="playAhead($event)">
 </progressbar>
 </div>
-<div id="button" class="col-md-1">
-  <span style="color:black; white-space:nowrap;">{{value | number:'.1-1'}}</span>
-</div>
-<div id="button" class="col-md-1">
+
+<div style="width:10%" class="inline progress_number">
   <span style="color:black; white-space:nowrap;">{{max | number:'.1-1'}}</span>
 </div>
-<div id="volume" class="col-md-1">
-  <input type="range" [value]=1 [max]="1" [step]="0.01"
-    (input)="setVolume($event)"/>
 </div>
-<div class="col-md-2">
-  <div id="button" class="col-md-4">
+
+<div class="col-md-1">
     <button type="button"
-      (click)="flip_shuffle()"
-        tooltipPopupDelay='5000' [tooltip]='shuffle ? "Shuffling" : "Not shuffling"'
-        tooltipPlacement="bottom"
-      >
-      <i class="fa fa-random fa-lg" aria-hidden="true"
-        [class.pushed_in]="shuffle"
-      ></i>
-    </button>
-  </div>
-  <div id="button" class="col-md-4">
-    <button type="button"
-        (click)="push_repeat()"
-        tooltipPopupDelay='5000' [tooltip]='repeat ? (repeat == 1 ? "Repeating song" : "Repeating playlist") : "Not repeating"'
-        tooltipPlacement="bottom"
-      >
-        <i class="fa" aria-hidden="true"
-            [class.pushed_in]="repeat != 0"
-            [class.fa-repeat]="repeat <= 1"
-            [class.fa-undo]="repeat == 2"
-      ></i>
-    </button>
-  </div>
-  <div id="button" class="col-md-4">
-    <button type="button"
+            class="btn btn-primary"
+            style="width:100%"
       (click)="mute()"
         tooltipPopupDelay='5000' [tooltip]='muted ? "muted" : volume * 100'
         tooltipPlacement="bottom"
@@ -90,6 +74,36 @@
        [class.fa-lg]="true"
       ></i>
     </button>
-  </div>
 </div>
+<div class="col-md-1">
+  <input type="range" [value]=1 [max]="1" [step]="0.01"
+    (input)="setVolume($event)"/>
+</div>
+
+<div class="col-md-1 btn-group">
+    <button type="button"
+            class="btn btn-primary"
+            style="width:50%"
+      (click)="flip_shuffle()"
+        tooltipPopupDelay='5000' [tooltip]='shuffle ? "Shuffling" : "Not shuffling"'
+        tooltipPlacement="bottom"
+      >
+      <i class="fa fa-random fa-lg" aria-hidden="true"
+        [class.pushed_in]="shuffle"
+      ></i>
+    </button>
+
+    <button type="button"
+            class="btn btn-primary"
+            style="width:50%"
+        (click)="push_repeat()"
+        tooltipPopupDelay='5000' [tooltip]='repeat ? (repeat == 1 ? "Repeating song" : "Repeating playlist") : "Not repeating"'
+        tooltipPlacement="bottom"
+      >
+        <i class="fa" aria-hidden="true"
+            [class.pushed_in]="repeat != 0"
+            [class.fa-repeat]="repeat <= 1"
+            [class.fa-undo]="repeat == 2"
+      ></i>
+    </button>
 </div>
