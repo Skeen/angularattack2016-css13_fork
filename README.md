@@ -19,3 +19,4 @@ Run `gulp help` for a list of supported tasks.
 ## Deploying
 
 Run `npm run deploy` to deploy the application to [Surge](https://surge.sh).
+
