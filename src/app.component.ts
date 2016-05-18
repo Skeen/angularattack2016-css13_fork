@@ -16,6 +16,13 @@ import {Downloads} from './downloads';
 import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 import {AlertComponent} from 'ng2-bootstrap/ng2-bootstrap';
 
+// TODO:
+// Bad health replication
+// - Good health removal from bad health list
+//
+// Print albums, artist and song information
+// Better search results
+//
 
 @Component({
     selector: 'my-app',
@@ -58,13 +65,6 @@ export class AppComponent
     private search_result : Song;
     private alerts : Array<Object> = [];
 
-    // TODO: Add DHT code
-    // TODO: Add replication code
-    // TODO: Add searching
-    // TODO: Add search results
-    // TODO: Seed local content
-    // TODO: Allow uploading local content
-    
     private onSubmit() : void
     {
         this.download_song(this.magnetURI);
