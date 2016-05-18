@@ -3,20 +3,6 @@
         <b>{{dl.name}}</b>
         <ul>
             <li> Hash: {{dl.info}} </li>
-            <li>
-                <a [href]="dl.magnetURI" target="_blank"
-                   tooltipPopupDelay='1000' tooltip='Magnet URI'
-                    >
-                    <i class="fa fa-magnet" aria-hidden="true"></i>
-                </a>
-            </li>
-            <li>
-                <a [href]="dl.blobURL" target="_blank" download="{{dl.name}}.torrent"
-                   tooltipPopupDelay='1000' tooltip='Download .torrent'
-                    >
-                    <i class="fa fa-download" aria-hidden="true"></i>
-                </a>
-            </li>
             <li> Progress: {{dl.progress*100 | number:'.1-1'}} % 
                 <i *ngIf="dl.progress != 1" class="fa fa-cog fa-spin fa-fw"></i>
             </li>
@@ -30,10 +16,6 @@
                         <i class="fa fa-plus" aria-hidden="true"></i>
                 </button>
             </li>
-            <li *ngIf="dl.storedLocally"> <i class="fa fa-hdd-o" aria-hidden="true"></i> Stored locally </li>
         </ul>
     </li>
 </ul>
-'(Blob URLs only work if the file is loaded from a server.
-    "http//localhost" works.
-    "file://" does not.)

@@ -31,10 +31,10 @@ export class Downloads extends events.EventEmitter
 
     private torrent_to_html(download:any, name:string, info:string, magnet:string, blobURL:string, query?:string) : void
     {
-        download.magnetURI = magnet;
+        //download.magnetURI = magnet;
         download.name = name;
         download.info = info;
-        download.blobURL = blobURL;
+        //download.blobURL = blobURL;
    
         this.downloads.push(download);
     }

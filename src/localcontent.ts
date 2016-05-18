@@ -1,6 +1,9 @@
 import {Component} from '@angular/core';
 import {Storage, Song, sha1, TorrentClient} from 'music-streamer-library';
 
+import {DomSanitizationService} from '@angular/platform-browser';
+
+
 import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
 import events = require('events');
@@ -14,11 +17,14 @@ import events = require('events');
 export class LocalContent extends events.EventEmitter
 {
 	private seeding:any[] = [];
+    private sanitizer:DomSanitizationService;
 
-	constructor()
+    // Inject the DOM Sanitizer service
+    // We need this to santize our 'magnet:' and 'blob:' URLs
+    constructor(sanitizer: DomSanitizationService)
 	{
 		super();
-        
+        this.sanitizer = sanitizer;
 	}
 
     // This should only be called once!
@@ -125,6 +131,8 @@ export class LocalContent extends events.EventEmitter
 	{
 		var blob: any = song.getBlob();
 		blob.name = song.getFileName();
+
+        var sanitized_file_blobURL = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(blob));
         var seed: any = 
         {
             song: song,
@@ -135,7 +143,7 @@ export class LocalContent extends events.EventEmitter
             magnetURI:"",
             info:"",
             blobURL:"",
-            file_blobURL: URL.createObjectURL(blob)
+            file_blobURL: sanitized_file_blobURL
         };
 		this.seeding.push(seed);
 
@@ -178,10 +186,10 @@ export class LocalContent extends events.EventEmitter
 			},
 			function(name:string, info:string, magnet:string, blobURL:string, query?:string)
             {
-                seed.magnetURI = magnet || "";
+                seed.magnetURI = this.sanitizer.bypassSecurityTrustUrl(magnet) || "";
                 seed.name = name || "";
                 seed.info = info || "";
-                seed.blobURL = blobURL || "";
+                seed.blobURL = this.sanitizer.bypassSecurityTrustUrl(blobURL) || "";
 			}.bind(this),
             update_seed_values
         );
