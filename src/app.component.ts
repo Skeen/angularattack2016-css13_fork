@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
 import {TorrentClient, Song, Storage, createSong} from 'music-streamer-library';
-import {HashTable, HTTP_HashTable} from 'music-streamer-library';
+import {HashTable, HTTP_HashTable, Scraper} from 'music-streamer-library';
 
 import {Player} from './player';
 import {Playlist} from './playlist';
@@ -59,7 +59,7 @@ export class AppComponent
 	private droparea_element : DropArea;
 
     // State variables
-    private dht : HashTable;
+    private dht : HashTable = new HTTP_HashTable("http://localhost:3000/");
 
     // Output state
     private search_result : Song;
@@ -95,7 +95,6 @@ export class AppComponent
 
     constructor()
     {
-        this.dht = new HTTP_HashTable("http://localhost:3000/");
     }
 
     ngAfterViewInit()
@@ -186,6 +185,11 @@ export class AppComponent
             this.playlist_element.addSong(song);
         }.bind(this));
 
+		this.localcontent_element.on('badHealthUpdate', function(song : Song)
+		{
+			this.updateDHTBadHealthList(song.getMagnet());
+		}.bind(this));
+
         this.localcontent_element.on('add-song', function(song : Song)
         {
             this.playlist_element.addSong(song);
@@ -208,7 +212,7 @@ export class AppComponent
 
 	public updateDHTBadHealthList(magnetURI:string):void
 	{
-		badHealthList.push(magnetURI);
+		this.badHealthList.push(magnetURI);
 		this.dht.get("badHealth", function(err?:any, value?:string)
 			{
 				if(err)

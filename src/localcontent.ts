@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {Storage, Song, sha1, TorrentClient, HTTP_HashTable} from 'music-streamer-library';
 import {DomSanitizationService} from '@angular/platform-browser';
-import {BadHealth} from './badhealth';
 
 import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
@@ -77,8 +76,7 @@ export class LocalContent extends events.EventEmitter
             }
             song.setMagnet(magnet);
 
-			// Add to bad health list
-			BadHealth.updateDHTBadHealthList(DHT, magnet);
+			this.emit('badHealthUpdate', song);
 
             // Add to storage with magnet URI icnluded
             Storage.addSong(song, function(err?:any, value?:string)
