@@ -108,6 +108,12 @@ export class AppComponent
             }.bind(this));
         }.bind(this));
 
+        this.playlist_element.on('no-more-songs', function()
+        {
+            this.alerts.push({msg: 'No more songs in playlist!', type: 'info', closable: true, timeout: 3000});
+
+        }.bind(this));
+
         this.player_element.on('nextSong', function()
         {
             if(this.player_element.getShuffle())

@@ -41,7 +41,6 @@ export class Playlist extends events.EventEmitter
 	public addSong(song:Song): void
 	{		
 		this.songs.push(song);
-		this.emit('addSong');
 	}
 
 	public changeSong(index:number): void
@@ -62,9 +61,10 @@ export class Playlist extends events.EventEmitter
 		}
 		else
 		{	
-            alert("No song found!");
 			// No song found at given index.
 			// TODO: error handling?
+            alert("No song found!");
+            return;
 		}
 		this.emit("changedSong");
 	}
@@ -91,8 +91,7 @@ export class Playlist extends events.EventEmitter
             }
             else
             {
-                // TODO: Output ng2-bootstrap alert
-                console.log("No more songs!");
+                this.emit("no-more-songs");
                 return;
             }
         }
@@ -140,14 +139,14 @@ export class Playlist extends events.EventEmitter
 	{
 		var albumSHA = song.getAlbum();
 		this.dht.get(albumSHA, function(err?:any, res?:string)
-			{
-				if(err)
-				{
-					return;
-				}
-				this.album = Album.fromJSON(JSON.parse(res));
-				this.albumName = this.album.name;
-			}.bind(this));
+        {
+            if(err)
+            {
+                return;
+            }
+            this.album = Album.fromJSON(JSON.parse(res));
+            this.albumName = this.album.name;
+        }.bind(this));
 	}
 
 	private getSongArtists(song:Song): void
