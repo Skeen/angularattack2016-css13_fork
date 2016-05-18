@@ -31,10 +31,9 @@ export class Downloads extends events.EventEmitter
 
     private torrent_to_html(download:any, name:string, info:string, magnet:string, blobURL:string, query?:string) : void
     {
-        //download.magnetURI = magnet;
+        download.magnetURI = magnet;
         download.name = name;
         download.info = info;
-        //download.blobURL = blobURL;
    
         this.downloads.push(download);
     }
@@ -102,17 +101,19 @@ export class Downloads extends events.EventEmitter
         this.emit('add-song', download.song);
     }
 
-    public downloadSong(magnetURI:string) : void
+    public isDownloading(magnetURI:string): boolean
     {
-        var abort:boolean = false;
+        var downloading:boolean = false;
         this.downloads.forEach(function(obj:any)
         {
             if(obj.magnetURI == magnetURI)
-                abort = true;
+                downloading = true;
         });
-        if(abort)
-            return;
+        return downloading;
+    }
 
+    public downloadSong(magnetURI:string) : void
+    {
         var download = {
             download_speed: 0,
             progress: 0,

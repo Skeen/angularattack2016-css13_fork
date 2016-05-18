@@ -45,6 +45,17 @@ export class LocalContent extends events.EventEmitter
         }.bind(this));
     }
 
+    public isSeeding(magnetURI:string): boolean
+    {
+        var is_seeding:boolean = false;
+        this.seeding.forEach(function(obj:any)
+        {
+            if(obj.magnetURI_raw == magnetURI)
+                is_seeding = true;
+        });
+        return is_seeding;
+    }
+
 	public addSong(song:Song, callback?:any): void
 	{
         // TODO: Check if song already exists
@@ -186,6 +197,7 @@ export class LocalContent extends events.EventEmitter
 			},
 			function(name:string, info:string, magnet:string, blobURL:string, query?:string)
             {
+                seed.magnetURI_raw = magnet;
                 seed.magnetURI = this.sanitizer.bypassSecurityTrustUrl(magnet) || "";
                 seed.name = name || "";
                 seed.info = info || "";

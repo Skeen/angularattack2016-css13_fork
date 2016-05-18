@@ -64,7 +64,16 @@ export class AppComponent
 
     private download_song(magnetURI:string) : void
     {
-        this.downloads_element.downloadSong(magnetURI);
+        var downloading:boolean = this.downloads_element.isDownloading(magnetURI);
+        var seeding:boolean = this.localcontent_element.isSeeding(magnetURI);
+        if(downloading || seeding)
+        {
+            alert("We've already got that song!");
+        }
+        else
+        {
+            this.downloads_element.downloadSong(magnetURI);
+        }
     }
 	
 
