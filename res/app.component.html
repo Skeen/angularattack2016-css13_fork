@@ -22,8 +22,15 @@
         <button type="submit">Download</button>
     </form>
 
-    <h2>Search result</h2>
+    <div *ngIf="alerts.length != 0">
+    <h2>Log</h2>
+    <alert *ngFor="let alert of alerts;let i = index" [type]="alert.type" [dismissible]="alert.closable" [dismissOnTimeout]="alert.timeout" (close)="closeAlert(i)">
+        {{ alert.msg }}
+        </alert>
+    </div>
+
     <div *ngIf="search_result">
+    <h2>Search result</h2>
     <b>{{search_result.title}}</b> 
     <ul>
         <li>Album: {{search_result.albumName}}</li>
@@ -48,12 +55,13 @@
 
 	<h2>Local</h2>
 	<localcontent #localcontent></localcontent>
-
+<!--
 	<h2>Playlists</h2>
 	<playlist_control></playlist_control>
 
 	<h2>Info</h2>
 	<songInfo></songInfo>
+-->
 
     <h2>DropArea</h2>
     <dropArea #droparea [dht]="dht"></dropArea>

@@ -14,6 +14,8 @@ import {LocalContent} from './localcontent';
 import {Downloads} from './downloads';
 
 import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
+import {AlertComponent} from 'ng2-bootstrap/ng2-bootstrap';
+
 
 @Component({
     selector: 'my-app',
@@ -21,7 +23,8 @@ import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
     directives: [
         Player, Playlist, Search, SongInfo, PlaylistControl, DropArea,
 		LocalContent, Downloads,
-		TOOLTIP_DIRECTIVES    
+
+		TOOLTIP_DIRECTIVES, AlertComponent
 	],
     styleUrls: ['app.component.css']
 })
@@ -51,9 +54,9 @@ export class AppComponent
     // State variables
     private dht : HashTable;
 
+    // Output state
     private search_result : Song;
-
-    private seeding : any = [];
+    private alerts : Array<Object> = [];
 
     // TODO: Add DHT code
     // TODO: Add replication code
@@ -71,16 +74,24 @@ export class AppComponent
     {
         var downloading:boolean = this.downloads_element.isDownloading(magnetURI);
         var seeding:boolean = this.localcontent_element.isSeeding(magnetURI);
-        if(downloading || seeding)
+        if(downloading)
         {
-            alert("We've already got that song!");
+            this.alerts.push({msg: 'That song is already downloading!', type: 'danger', closable: true, timeout: 3000});
+        }
+        else if (seeding)
+        {
+            this.alerts.push({msg: 'That song is stored local!', type: 'warning', closable: true, timeout: 3000});
         }
         else
         {
             this.downloads_element.downloadSong(magnetURI);
         }
     }
-	
+
+    public closeAlert(i:number) : void 
+    {
+        this.alerts.splice(i, 1);
+    }
 
     constructor()
     {
@@ -152,8 +163,9 @@ export class AppComponent
             this.localcontent_element.addSong(copy, function(err?:any, sha1?:string)
             {
                 if (err) throw err;
+                this.alerts.push({msg: 'Downloaded: "' + song.title + '" to local content!', type: 'success', closable: true, timeout: 3000});
                 added();
-            });
+            }.bind(this));
         }.bind(this));
 
         // added is a callback function
@@ -164,8 +176,9 @@ export class AppComponent
             this.localcontent_element.addSong(copy, function(err?:any, sha1?:string)
             {
                 if (err) throw err;
+                this.alerts.push({msg: 'Added: "' + song.title + '" to local content!', type: 'info', closable: true, timeout: 3000});
                 added();
-            });
+            }.bind(this));
         }.bind(this));
 
         this.downloads_element.on('add-song', function(song : Song)
@@ -180,7 +193,7 @@ export class AppComponent
 
         this.search_element.on('song-select', function(song : Song)
         {
-            console.log(song);
+            //console.log(song);
             this.search_result = song;
         }.bind(this));
     }
