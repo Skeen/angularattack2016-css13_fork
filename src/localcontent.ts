@@ -59,29 +59,40 @@ export class LocalContent extends events.EventEmitter
 	public addSong(song:Song, callback?:any): void
 	{
         // TODO: Check if song already exists
-
-		// Add to storage first
-		Storage.addSong(song, function(err?:any, value?:string)
+        
+        // New song, add it
+        this.seed(song, function(magnet:string)
         {
-            if(err || !value)
+            var old_magnet = song.getMagnet();
+            if(old_magnet != undefined && old_magnet != magnet)
             {
                 if(callback)
-                    callback(err, value);
+                    callback("MagnetURI mismatch!", undefined);
                 else
-                    alert(err);
+                    alert("MagnetURI mismatch!");
                 return;
             }
+            song.setMagnet(magnet);
 
-            // New song, add it
-            this.seed(song);
-            this.emit('addSong');
-
-            if(callback)
+            // Add to storage first
+            Storage.addSong(song, function(err?:any, value?:string)
             {
-                callback(err, value);
-            }
+                if(err || !value)
+                {
+                    if(callback)
+                        callback(err, value);
+                    else
+                        alert(err);
+                    return;
+                }
 
-        }.bind(this));	
+                if(callback)
+                {
+                    callback(err, value);
+                }
+
+            }.bind(this));	
+        }.bind(this));
 	}
 
 	public getKeys(callback:any): void
@@ -138,11 +149,14 @@ export class LocalContent extends events.EventEmitter
         });
     }
 
-	private seed(song:Song):void
+	private seed(song:Song, callback?:any):void
 	{
 		var blob: any = song.getBlob();
-		blob.name = song.getFileName();
-
+        // If our blob doesn't have a name, set it
+        if(!blob.name)
+        {
+            blob.name = song.getFileName();
+        }
         var sanitized_file_blobURL = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(blob));
         var seed: any = 
         {
@@ -195,13 +209,17 @@ export class LocalContent extends events.EventEmitter
                     update_seed_values_torrent();
 				});
 			},
-			function(name:string, info:string, magnet:string, blobURL:string, query?:string)
+			function(name:string, info:string, magnet:string, blobURL:string)
             {
                 seed.magnetURI_raw = magnet;
                 seed.magnetURI = this.sanitizer.bypassSecurityTrustUrl(magnet) || "";
                 seed.name = name || "";
                 seed.info = info || "";
                 seed.blobURL = this.sanitizer.bypassSecurityTrustUrl(blobURL) || "";
+
+                if(callback)
+                    callback(magnet);
+
 			}.bind(this),
             update_seed_values
         );

@@ -29,6 +29,7 @@ export class AppComponent
 {
     private magnetURI : string = "magnet:?xt=urn:btih:60e0fcf843dbeb02dc08f34e4e6ca1e9bf385d89&dn=tiasu-analogue_ambitions-01_the_start.ogg&tr=udp%3A%2F%2Fexodus.desync.com%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=wss%3A%2F%2Ftracker.webtorrent.io";
 
+    // DOM Children
     @ViewChild('player')
     private player_element : Player;
 
@@ -44,6 +45,10 @@ export class AppComponent
 	@ViewChild('search')
 	private search_element : Search;
 
+	@ViewChild('droparea')
+	private droparea_element : DropArea;
+
+    // State variables
     private dht : HashTable;
 
     private search_result : Song;
@@ -79,7 +84,7 @@ export class AppComponent
 
     constructor()
     {
-        this.dht = new HTTP_HashTable("http://46.101.162.151:3000/");
+        this.dht = new HTTP_HashTable("http://localhost:3000/");
     }
 
     ngAfterViewInit()
@@ -141,6 +146,18 @@ export class AppComponent
 
         // added is a callback function
         this.downloads_element.on('downloaded', function(song : Song, added : any)
+        {
+            // localcontent.addSong is destructive, so we create a copy
+            var copy : Song = Song.fromJSON(song);
+            this.localcontent_element.addSong(copy, function(err?:any, sha1?:string)
+            {
+                if (err) throw err;
+                added();
+            });
+        }.bind(this));
+
+        // added is a callback function
+        this.droparea_element.on('ready-for-seed', function(song : Song, added : any)
         {
             // localcontent.addSong is destructive, so we create a copy
             var copy : Song = Song.fromJSON(song);
