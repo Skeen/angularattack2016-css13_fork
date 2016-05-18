@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
 import {Storage, Song, sha1, TorrentClient} from 'music-streamer-library';
-import {Playlist} from './playlist';
 
 import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
+
+import events = require('events');
 
 @Component({
 	selector: 'localcontent',
@@ -10,128 +11,132 @@ import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 	styleUrls: ['localcontent.css'],
 	directives: [TOOLTIP_DIRECTIVES]
 })
-export class LocalContent extends Playlist
+export class LocalContent extends events.EventEmitter
 {
-	private storageKeys:string[] = [];
-
-	protected songs:Song[] = [];
-	private seeding:any = [];
+	private seeding:any[] = [];
 
 	constructor()
 	{
 		super();
-		super.setName("Local Content");
+        
 	}
 
-	private hasDuplicate(hash:string): boolean
-	{		
-		if(this.storageKeys.indexOf(hash) == -1)
-		{
-			return false;
-		}
-		return true;
-	}
-	
+    // This should only be called once!
+    // XXX: Call from constructor?
+    public seedLocal()
+    {
+        this.getSongs(function(err?:any, songs?:Song[])
+        {
+            if(err || !songs)
+            {
+                alert("Unable to seed local content!");
+                return;
+            }
+            songs.forEach(function(song:Song)
+            {
+                this.seed(song);
+            }.bind(this));
+        }.bind(this));
+    }
+
 	public addSong(song:Song, callback?:any): void
 	{
-		var storedSong:Song = Song.fromJSON(song);
-		//add to storage first
-		Storage.addSong(storedSong, function(err?:any, value?:string)
-			{
-				if(err || !value)
-				{
-					//TODO: handle error properly
-				}
-				if(!(this.hasDuplicate(value)))
-				{
-					var i:number = (this.songs.push(song)) - 1;
-					this.seed(i, song);
-					console.log(i);
-					console.log(this.songs);
-					console.log(this.seeding);
-					this.emit('addSong');
-				}
-				if(callback)
-				{
-					callback(err, value);
-				}
-			}.bind(this));	
+        // TODO: Check if song already exists
+
+		// Add to storage first
+		Storage.addSong(song, function(err?:any, value?:string)
+        {
+            if(err || !value)
+            {
+                if(callback)
+                    callback(err, value);
+                else
+                    alert(err);
+                return;
+            }
+
+            // New song, add it
+            this.seed(song);
+            this.emit('addSong');
+
+            if(callback)
+            {
+                callback(err, value);
+            }
+
+        }.bind(this));	
 	}
 
-	public getKeys(callback?:any): void
+	public getKeys(callback:any): void
 	{
 		Storage.getKeys(function(err?:any, keys?:string[])
-			{
-				if(err || !keys)
-				{
-					//TODO: handle error properly
-					alert("Error getting list of stored items!");
-				}
-				this.storageKeys = keys;
-				if(callback)
-				{
-					callback(err, keys);
-				}
-			}.bind(this));
+        {
+            if(err || !keys)
+            {
+                if(callback)
+                    callback(err, keys);
+                else
+                    alert(err);
+                return;
+            }
+            callback(err, keys);
+
+        }.bind(this));
 	}
 
-	public getSongs(callback?:any): void
+	public getSongs(callback:any): void
 	{
-		this.getKeys(function(err?:any, keys?:string[])
-			{
-				this.getSongsRec([], callback);
-			}.bind(this));
-	}
+        function getSongsRecursive(songs:Song[], callback:any, keys:string[]): void
+        {
+            // No more keys == we're done
+            if(keys.length == 0)
+            {
+                callback(undefined, songs);
+                return;
+            }
 
-	private getSongsRec(songs:Song[], callback?:any):void
-	{		
-		var next:number = songs.length;
-		var key:string = this.storageKeys[next];
-		if(!key)
-		{
-			this.updateSeedList(songs);
-			this.songs = songs;
-			if(callback)
-				callback(undefined, this.songs);
-			return;
-		}
-		Storage.getSong(key, function(err?:any, song?:Song)
-			{
-				if(err || !song)
-				{
-					//TODO: Handle error properly
-					alert("Error getting song from storage!");
-				}
-				songs.push(song);
-				this.getSongsRec(songs, callback);
-			}.bind(this));
-	}
+            var key:string = keys.pop();
+            Storage.getSong(key, function(err?:any, song?:Song)
+            {
+                if(err || !song)
+                {
+                    callback(err, songs);
+                    return;
+                }
+                songs.push(song);
 
-	private updateSeedList(songs:Song[])
-	{
-		for(var i=0; i < songs.length; i++)
-		{
-			var song:Song = songs[i];
-			this.seed(i, song);
-		}
-	}
+                getSongsRecursive(songs, callback, keys);
 
-	private seed(i:number, song:Song):void
+            }.bind(this));
+        }
+        this.getKeys(function(err?:any, keys?:any)
+        {
+            if(err || !keys)
+            {
+                callback(err, keys);
+                return;
+            }
+
+            getSongsRecursive([], callback, keys);
+        });
+    }
+
+	private seed(song:Song):void
 	{
 		var blob: any = song.getBlob();
         var seed: any = 
-			{
-                song: song,
-                upload_speed: 0,
-                bytes_uploaded: 0,
-                num_peers: 0,
-				name: "",
-				magnetURI:"",
-				info:"",
-				blobURL:""
-            };
+        {
+            song: song,
+            upload_speed: 0,
+            bytes_uploaded: 0,
+            num_peers: 0,
+            name: "",
+            magnetURI:"",
+            info:"",
+            blobURL:""
+        };
 		blob.name = song.getFileName();
-		this.seeding[i] = seed;
+		this.seeding.push(seed);
 
         function update_seed_values(upload_speed?:number, bytes_uploaded?:number, num_peers?:number)
         {
@@ -151,11 +156,19 @@ export class LocalContent extends Playlist
                     update_seed_values(torrent.upload_speed, torrent.bytes_uploaded, torrent.num_peers);
                 }
 
+                // Clear speed and peers if no changes occur within 5 seconds
+                var old_speed = seed.upload_speed;
+                var old_peers = seed.num_peers;
 				setInterval(function()
                 {
-                    update_seed_values(0,null,0);
                     update_seed_values_torrent();
-                }, 1000);
+                    if(seed.upload_speed == old_speed)
+                    {
+                        update_seed_values(0, torrent.bytes_uploaded, 0);
+                    }
+                    old_speed = seed.upload_speed;
+                    old_peers = seed.num_peers;
+                }, 5000);
 
                 torrent.on('wire', function()
                 {

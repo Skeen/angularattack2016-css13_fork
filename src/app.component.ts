@@ -127,16 +127,13 @@ export class AppComponent
             }
         }.bind(this));
 
-		// Load local content at startup
-		this.localcontent_element.getKeys(function(err?:any, key?:any)
-			{
-				this.localcontent_element.getSongs(undefined);						 
-			}.bind(this));
+        // Seed our local content
+        this.localcontent_element.seedLocal();
 
         // added is a callback function
         this.downloads_element.on('downloaded', function(song : Song, added : any)
         {
-            // localcontent.addSong is destructive
+            // localcontent.addSong is destructive, so we create a copy
             var copy : Song = Song.fromJSON(song);
             this.localcontent_element.addSong(copy, function(err?:any, sha1?:string)
             {
