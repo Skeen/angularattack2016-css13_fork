@@ -197,4 +197,87 @@ export class AppComponent
             this.search_result = song;
         }.bind(this));
     }
+	
+	private GOOD_HEALTH:number = 5;
+	private badHealthList:string[] = [];
+
+	public addToBadHealthList(magnetURI:string):void
+	{
+		this.badHealthList.push(magnetURI);
+	}
+
+	public updateDHTBadHealthList(magnetURI:string):void
+	{
+		badHealthList.push(magnetURI);
+		this.dht.get("badHealth", function(err?:any, value?:string)
+			{
+				if(err)
+				{
+					throw err;
+				}
+				else
+				{
+					var badHealthItems:any = JSON.parse(value);
+					for(var badHealthItem of badHealthItems)
+					{
+						if(this.badHealthList.indexOf(badHealthItem) == -1)
+						{
+							this.badHealthList.push(badHealthItem);
+						}
+					}
+					var jsonList = JSON.stringify(this.badHealthList);
+					this.dht.put("badHealth", jsonList, function(){});
+				}
+			}.bind(this));
+	}
+
+	public updateSeedsFromBadHealth():void
+	{
+		this.dht.get("badHealth", function(err?:any, value?:string)
+			{
+				if(err)
+				{
+					var jsonList:string = JSON.stringify([]);
+					this.dht.put("badHealth", jsonList, function(){});
+				}
+				else
+				{
+					var badHealthItems:any = JSON.parse(value);
+					var seedList = badHealthItems.length < 5 ? badHealthItems : this.getRandom(badHealthItems, 5);
+					var songSeed:number = 0;
+					for(var seed of seedList)
+					{
+						Scraper.scrape(seed, function(data:any)
+							{
+								songSeed = data.complete;
+							});
+						if(songSeed > this.GOOD_HEALTH)
+						{
+							this.dht.put("badHealth", this.dht.splice(seed, 1), function()
+								{
+									this.download_song(seed);
+
+								});
+						}
+					}
+				}
+			}.bind(this));
+	}
+
+	private getRandom(arr:any, n:any)
+	{
+		var result = new Array(n);
+		var len = arr.length;
+		var taken = new Array(len);
+		if(n > len)
+			throw new RangeError("getRandom: more elements taken than available");
+		while(n--)
+		{
+			var x = Math.floor(Math.random() * len);
+			result[n] = arr[x in taken ? taken[x] : x];
+			taken[x] = --len;
+		}
+		return result;
+	}
+
 }
