@@ -78,8 +78,14 @@ export class Downloads extends events.EventEmitter
                 
                 this.emit('downloaded', song, function()
                 {
-                    download.storedLocally = true;
-                });
+                    var index = this.downloads.indexOf(download);
+                    if(index == -1)
+                    {
+                        alert("Cannot remove such element!");
+                        return;
+                    }
+                    this.downloads.splice(index, 1);
+                }.bind(this));
             }.bind(this));
         }.bind(this));
     }
