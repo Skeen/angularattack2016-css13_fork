@@ -124,6 +124,7 @@ export class LocalContent extends events.EventEmitter
 	private seed(song:Song):void
 	{
 		var blob: any = song.getBlob();
+		blob.name = song.getFileName();
         var seed: any = 
         {
             song: song,
@@ -133,9 +134,9 @@ export class LocalContent extends events.EventEmitter
             name: "",
             magnetURI:"",
             info:"",
-            blobURL:""
+            blobURL:"",
+            file_blobURL: URL.createObjectURL(blob)
         };
-		blob.name = song.getFileName();
 		this.seeding.push(seed);
 
         function update_seed_values(upload_speed?:number, bytes_uploaded?:number, num_peers?:number)

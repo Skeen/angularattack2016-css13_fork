@@ -86,23 +86,14 @@ export class Downloads extends events.EventEmitter
                     }
                     this.downloads.splice(index, 1);
                 }.bind(this));
+
+                this.torrent_progress(download, 0, 1, 0);
             }.bind(this));
         }.bind(this));
     }
 
     private handleMusicStream(download:any, file: any, magnetURI: string) : void
     {
-        // Add download URL to downloads
-        file.getBlobURL(
-            function(err: any, url: any)
-            {
-                if (err) {
-                    alert(err.message);
-                }
-                this.torrent_progress(download, 0, 1, 0);
-                download.file_blobURL = url;
-            }.bind(this));
-
         this.pullOutMetadata(download, file, magnetURI);
     }
 

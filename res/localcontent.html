@@ -5,12 +5,15 @@
         </div>
         <div class="col-md-2">Song title</div>
         <div class="col-md-2">Album</div>
-        <div class="col-md-2">Primary Artist</div>
+        <div class="col-md-1">Primary Artist</div>
         <div class="col-md-1">
             MagnetLink
         </div>
         <div class="col-md-1">
             Torrent File
+        </div>
+        <div class="col-md-1">
+            Download File
         </div>
         <div class="col-md-1">
             Upload Speed
@@ -36,7 +39,7 @@
         </div>
 		<div class="col-md-2">{{seed.song.title}}</div>
 		<div class="col-md-2">{{seed.song.albumName}}</div>
-		<div class="col-md-2">{{seed.song.artistNames[0]}}</div>
+		<div class="col-md-1">{{seed.song.artistNames[0]}}</div>
 		<div class="col-md-1">
 			<a [href]="seed.magnetURI" target="_blank"
                        tooltipPopupDelay='1000' tooltip='Magnet URI'>
@@ -49,6 +52,13 @@
                 <i class="fa fa-download" aria-hidden="true"></i>
             </a>
 		</div>
+        <div class="col-md-1">
+            <a [href]="seed.file_blobURL" target="_blank" download="{{seed.name}}"
+               tooltipPopupDelay='1000' tooltip='Download {{seed.name}}'
+                >
+                <i class="fa fa-file-audio-o" aria-hidden="true"></i>
+            </a>
+        </div>
 		<div class="col-md-1">
 			{{seed.upload_speed/1000 | number:'.1-1'}} kB/sec
 		</div>
