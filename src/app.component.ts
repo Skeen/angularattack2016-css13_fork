@@ -163,7 +163,7 @@ export class AppComponent
             this.localcontent_element.addSong(copy, function(err?:any, sha1?:string)
             {
                 if (err) throw err;
-                this.alerts.push({msg: 'Downloaded: "' + song.title + '" to local content!', type: 'success', closable: true, timeout: 3000});
+                this.alerts.push({msg: 'Downloaded: "' + song.getTitle() + '" to local content!', type: 'success', closable: true, timeout: 3000});
                 added();
             }.bind(this));
         }.bind(this));
@@ -176,7 +176,7 @@ export class AppComponent
             this.localcontent_element.addSong(copy, function(err?:any, sha1?:string)
             {
                 if (err) throw err;
-                this.alerts.push({msg: 'Added: "' + song.title + '" to local content!', type: 'info', closable: true, timeout: 3000});
+                this.alerts.push({msg: 'Added: "' + song.getTitle() + '" to local content!', type: 'info', closable: true, timeout: 3000});
                 added();
             }.bind(this));
         }.bind(this));
