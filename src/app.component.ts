@@ -288,7 +288,7 @@ export class AppComponent
 				if(err)
 				{
 					var jsonList:string = JSON.stringify([]);
-					this.dht.put_raw("sha1"+sha1("badHealth"), jsonList, function(){});
+					this.dht.put_raw("sha1:"+sha1("badHealth"), jsonList, function(){});
 				}
 				else
 				{
