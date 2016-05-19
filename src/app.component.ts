@@ -206,8 +206,11 @@ export class AppComponent
             //console.log(song);
             this.search_result = song;
         }.bind(this));
+
+		this.timedBadHealthCheck = setInterval(updateSeedsFromBadHealth(), 10000);
     }
 	
+	private timedBadHealthCheck:any;
 	private GOOD_HEALTH:number = 5;
 	private badHealthList:string[] = [];
 
@@ -218,57 +221,65 @@ export class AppComponent
 
 	public updateDHTBadHealthList(magnetURI:string):void
 	{
-		this.badHealthList.push(magnetURI);
-		this.dht.get("badHealth", function(err?:any, value?:string)
+		// Check if it is bad health
+		Scraper.scrape(magnetURI, function(data:any)
 			{
-				if(err)
+				if(data.complete >= this.GOOD:HEALTH)
 				{
-					throw err;
+					// Was in good health.
+					return;
 				}
-				else
+				this.badHealthList.push("sha1:"+magnetURI);
+				this.dht.get_raw("sha1:" + sha1("badHealth"), function(err?:any, value?:string)
 				{
-					var badHealthItems:any = JSON.parse(value);
-					for(var badHealthItem of badHealthItems)
+					if(err)
 					{
-						if(this.badHealthList.indexOf(badHealthItem) == -1)
-						{
-							this.badHealthList.push(badHealthItem);
-						}
+						throw err;
 					}
-					var jsonList = JSON.stringify(this.badHealthList);
-					this.dht.put("badHealth", jsonList, function(){});
-				}
+					else
+					{
+						var badHealthItems:any = JSON.parse(value);
+						for(var badHealthItem of badHealthItems)
+						{
+							if(this.badHealthList.indexOf(badHealthItem) == -1)
+							{
+								this.badHealthList.push(badHealthItem);
+							}
+						}
+						var jsonList = JSON.stringify(this.badHealthList);
+						this.dht.put("sha1:"+ sha1("badHealth"), jsonList, function(){});
+					}
+				}.bind(this));
 			}.bind(this));
 	}
 
 	public updateSeedsFromBadHealth():void
 	{
-		this.dht.get("badHealth", function(err?:any, value?:string)
+		this.dht.get_raw("sha1"+sha1("badHealth"), function(err?:any, value?:string)
 			{
 				if(err)
 				{
 					var jsonList:string = JSON.stringify([]);
-					this.dht.put("badHealth", jsonList, function(){});
+					this.dht.put_raw("sha1"+sha1("badHealth"), jsonList, function(){});
 				}
 				else
 				{
 					var badHealthItems:any = JSON.parse(value);
 					var seedList = badHealthItems.length < 5 ? badHealthItems : this.getRandom(badHealthItems, 5);
-					var songSeed:number = 0;
-					for(var seed of seedList)
+					for(var i=0; i < seedList.length; i++)
 					{
-						Scraper.scrape(seed, function(data:any)
+						Scraper.scrape(seedList[i], function(data:any)
 							{
-								songSeed = data.complete;
-							});
-						if(songSeed > this.GOOD_HEALTH)
-						{
-							this.dht.put("badHealth", this.dht.splice(seed, 1), function()
+								if(data.complete >= this.GOOD_HEALTH)
 								{
-									this.download_song(seed);
-
-								});
-						}
+									badHealthItems.splice(i,1);
+									this.dht.put_raw("sha1:"+sha1("badHealth"), badHealthItems), function(){});
+								}
+								else
+								{
+									this.download_song(seedList[i]);
+								}
+							});
 					}
 				}
 			}.bind(this));
