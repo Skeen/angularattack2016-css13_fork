@@ -62,7 +62,7 @@ export class AppComponent
 	private droparea_element : DropArea;
 
     // State variables
-    private dht : HashTable = new HTTP_HashTable("http://10.192.85.132:3000/");
+    private dht : HashTable = new HTTP_HashTable("http://localhost:3000/");
 
     // Output state
     private search_result : any;
@@ -219,11 +219,6 @@ export class AppComponent
             this.playlist_element.addSong(song);
         }.bind(this));
 
-		this.localcontent_element.on('badHealthUpdate', function(song : Song)
-		{
-			this.updateDHTBadHealthList(song.getMagnet());
-		}.bind(this));
-
         this.localcontent_element.on('add-song', function(song : Song)
         {
             this.playlist_element.addSong(song);
@@ -235,9 +230,16 @@ export class AppComponent
             this.search_result = value;
         }.bind(this));
 
+        /*
+        this.localcontent_element.on('badHealthUpdate', function(song : Song)
+		{
+			this.updateDHTBadHealthList(song.getMagnet());
+		}.bind(this));
+
 		this.timedBadHealthCheck = setInterval(this.updateSeedsFromBadHealth(), 10000);
+        */
     }
-	
+	/*
 	private timedBadHealthCheck:any;
 	private GOOD_HEALTH:number = 5;
 	private badHealthList:string[] = [];
@@ -328,5 +330,5 @@ export class AppComponent
 		}
 		return result;
 	}
-
+    */
 }
