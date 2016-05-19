@@ -62,7 +62,7 @@ export class AppComponent
 	private droparea_element : DropArea;
 
     // State variables
-    private dht : HashTable = new HTTP_HashTable("http://localhost:3000/");
+    private dht : HashTable = new HTTP_HashTable("http://10.192.85.132:3000/");
 
     // Output state
     private search_result : any;
@@ -283,7 +283,7 @@ export class AppComponent
 
 	private updateSeedsFromBadHealth():void
 	{
-		this.dht.get_raw("sha1"+sha1("badHealth"), function(err?:any, value?:string)
+		this.dht.get_raw("sha1:"+sha1("badHealth"), function(err?:any, value?:string)
 			{
 				if(err)
 				{
