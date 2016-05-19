@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
 
 import {TorrentClient, Song, Storage, createSong} from 'music-streamer-library';
-import {HashTable, HTTP_HashTable, Scraper} from 'music-streamer-library';
+import {HashTable, HTTP_HashTable, Scraper, sha1} from 'music-streamer-library';
 
 import {Player} from './player';
 import {Playlist} from './playlist';
@@ -207,29 +207,29 @@ export class AppComponent
             this.search_result = song;
         }.bind(this));
 
-		this.timedBadHealthCheck = setInterval(updateSeedsFromBadHealth(), 10000);
+		this.timedBadHealthCheck = setInterval(this.updateSeedsFromBadHealth(), 10000);
     }
 	
 	private timedBadHealthCheck:any;
 	private GOOD_HEALTH:number = 5;
 	private badHealthList:string[] = [];
 
-	public addToBadHealthList(magnetURI:string):void
+	private addToBadHealthList(magnetURI:string):void
 	{
 		this.badHealthList.push(magnetURI);
 	}
 
-	public updateDHTBadHealthList(magnetURI:string):void
+	private updateDHTBadHealthList(magnetURI:string):void
 	{
 		// Check if it is bad health
 		Scraper.scrape(magnetURI, function(data:any)
 			{
-				if(data.complete >= this.GOOD:HEALTH)
+				if(data.complete >= this.GOOD_HEALTH)
 				{
 					// Was in good health.
 					return;
 				}
-				this.badHealthList.push("sha1:"+magnetURI);
+				this.badHealthList.push(magnetURI);
 				this.dht.get_raw("sha1:" + sha1("badHealth"), function(err?:any, value?:string)
 				{
 					if(err)
@@ -247,13 +247,13 @@ export class AppComponent
 							}
 						}
 						var jsonList = JSON.stringify(this.badHealthList);
-						this.dht.put("sha1:"+ sha1("badHealth"), jsonList, function(){});
+						this.dht.put_raw("sha1:"+ sha1("badHealth"), jsonList, function(){});
 					}
 				}.bind(this));
 			}.bind(this));
 	}
 
-	public updateSeedsFromBadHealth():void
+	private updateSeedsFromBadHealth():void
 	{
 		this.dht.get_raw("sha1"+sha1("badHealth"), function(err?:any, value?:string)
 			{
@@ -273,7 +273,7 @@ export class AppComponent
 								if(data.complete >= this.GOOD_HEALTH)
 								{
 									badHealthItems.splice(i,1);
-									this.dht.put_raw("sha1:"+sha1("badHealth"), badHealthItems), function(){});
+									this.dht.put_raw("sha1:"+sha1("badHealth"), badHealthItems, function(){});
 								}
 								else
 								{
