@@ -3,7 +3,7 @@ import {ViewChild, ElementRef} from '@angular/core';
 import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
 
 import {TorrentClient, Song, Storage, createSong} from 'music-streamer-library';
-import {HashTable, HTTP_HashTable} from 'music-streamer-library';
+import {HashTable, HTTP_HashTable, Scraper, sha1} from 'music-streamer-library';
 
 import {Player} from './player';
 import {Playlist} from './playlist';
@@ -62,7 +62,7 @@ export class AppComponent
 	private droparea_element : DropArea;
 
     // State variables
-    private dht : HashTable;
+    private dht : HashTable = new HTTP_HashTable("http://localhost:3000/");
 
     // Output state
     private search_result : any;
@@ -123,7 +123,6 @@ export class AppComponent
 
     constructor()
     {
-        this.dht = new HTTP_HashTable("http://localhost:3000/");
     }
 
     ngAfterViewInit()
@@ -220,6 +219,11 @@ export class AppComponent
             this.playlist_element.addSong(song);
         }.bind(this));
 
+		this.localcontent_element.on('badHealthUpdate', function(song : Song)
+		{
+			this.updateDHTBadHealthList(song.getMagnet());
+		}.bind(this));
+
         this.localcontent_element.on('add-song', function(song : Song)
         {
             this.playlist_element.addSong(song);
@@ -230,5 +234,99 @@ export class AppComponent
             console.log(value);
             this.search_result = value;
         }.bind(this));
+
+		this.timedBadHealthCheck = setInterval(this.updateSeedsFromBadHealth(), 10000);
     }
+	
+	private timedBadHealthCheck:any;
+	private GOOD_HEALTH:number = 5;
+	private badHealthList:string[] = [];
+
+	private addToBadHealthList(magnetURI:string):void
+	{
+		this.badHealthList.push(magnetURI);
+	}
+
+	private updateDHTBadHealthList(magnetURI:string):void
+	{
+		// Check if it is bad health
+		Scraper.scrape(magnetURI, function(data:any)
+			{
+				if(data.complete >= this.GOOD_HEALTH)
+				{
+					// Was in good health.
+					return;
+				}
+				this.badHealthList.push(magnetURI);
+				this.dht.get_raw("sha1:" + sha1("badHealth"), function(err?:any, value?:string)
+				{
+					if(err)
+					{
+						throw err;
+					}
+					else
+					{
+						var badHealthItems:any = JSON.parse(value);
+						for(var badHealthItem of badHealthItems)
+						{
+							if(this.badHealthList.indexOf(badHealthItem) == -1)
+							{
+								this.badHealthList.push(badHealthItem);
+							}
+						}
+						var jsonList = JSON.stringify(this.badHealthList);
+						this.dht.put_raw("sha1:"+ sha1("badHealth"), jsonList, function(){});
+					}
+				}.bind(this));
+			}.bind(this));
+	}
+
+	private updateSeedsFromBadHealth():void
+	{
+		this.dht.get_raw("sha1"+sha1("badHealth"), function(err?:any, value?:string)
+			{
+				if(err)
+				{
+					var jsonList:string = JSON.stringify([]);
+					this.dht.put_raw("sha1"+sha1("badHealth"), jsonList, function(){});
+				}
+				else
+				{
+					var badHealthItems:any = JSON.parse(value);
+					var seedList = badHealthItems.length < 5 ? badHealthItems : this.getRandom(badHealthItems, 5);
+					for(var i=0; i < seedList.length; i++)
+					{
+						Scraper.scrape(seedList[i], function(data:any)
+							{
+								if(data.complete >= this.GOOD_HEALTH)
+								{
+									badHealthItems.splice(i,1);
+									this.dht.put_raw("sha1:"+sha1("badHealth"), badHealthItems, function(){});
+								}
+								else
+								{
+									this.download_song(seedList[i]);
+								}
+							});
+					}
+				}
+			}.bind(this));
+	}
+
+	private getRandom(arr:any, n:any)
+	{
+		var result = new Array(n);
+		var len = arr.length;
+		var taken = new Array(len);
+		if(n > len)
+			throw new RangeError("getRandom: more elements taken than available");
+		while(n--)
+		{
+			var x = Math.floor(Math.random() * len);
+			result[n] = arr[x in taken ? taken[x] : x];
+			taken[x] = --len;
+		}
+		return result;
+	}
+
 }

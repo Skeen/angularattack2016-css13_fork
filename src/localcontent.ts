@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
-import {Storage, Song, sha1, TorrentClient} from 'music-streamer-library';
-
+import {Storage, Song, sha1, TorrentClient, HTTP_HashTable} from 'music-streamer-library';
 import {DomSanitizationService} from '@angular/platform-browser';
-
 
 import {TOOLTIP_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
@@ -18,6 +16,10 @@ export class LocalContent extends events.EventEmitter
 {
 	private seeding:any[] = [];
     private sanitizer:DomSanitizationService;
+
+	// For bad health maintainance
+	private static DHT = new HTTP_HashTable();
+	
 
     // Inject the DOM Sanitizer service
     // We need this to santize our 'magnet:' and 'blob:' URLs
@@ -60,7 +62,7 @@ export class LocalContent extends events.EventEmitter
 	{
         // TODO: Check if song already exists
         
-        // New song, add it
+        // New song, seed to generate magnet URI
         this.seed(song, function(magnet:string)
         {
             // XXX: This callback never happens
@@ -75,7 +77,9 @@ export class LocalContent extends events.EventEmitter
             }
             song.setMagnet(magnet);
 
-            // Add to storage first
+			this.emit('badHealthUpdate', song);
+
+            // Add to storage with magnet URI icnluded
             Storage.addSong(song, function(err?:any, value?:string)
             {
                 if(err || !value)
