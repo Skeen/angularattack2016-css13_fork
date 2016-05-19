@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {ViewChild, ElementRef} from '@angular/core';
+import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from '@angular/common';
 
 import {TorrentClient, Song, Storage, createSong} from 'music-streamer-library';
 import {HashTable, HTTP_HashTable} from 'music-streamer-library';
@@ -30,6 +31,8 @@ import {AlertComponent} from 'ng2-bootstrap/ng2-bootstrap';
     directives: [
         Player, Playlist, Search, SongInfo, PlaylistControl, DropArea,
 		LocalContent, Downloads,
+
+        NgSwitch, NgSwitchWhen, NgSwitchDefault,
 
 		TOOLTIP_DIRECTIVES, AlertComponent
 	],
@@ -62,7 +65,7 @@ export class AppComponent
     private dht : HashTable;
 
     // Output state
-    private search_result : Song;
+    private search_result : any;
     private alerts : Array<Object> = [];
 
     private onSubmit() : void
@@ -86,6 +89,31 @@ export class AppComponent
         {
             this.downloads_element.downloadSong(magnetURI);
         }
+    }
+
+    public lookup(sha1_hash:string)
+    {
+        console.log(sha1_hash);
+
+        this.dht.get_raw("sha1:" + sha1_hash, function(err:any, value:string)
+        {
+            if(err) 
+            {
+                alert(err);
+                return;
+            }
+
+            var resp = JSON.parse(value);
+            if(resp.length != 1)
+            {
+                alert("Invalid response length from DHT!");
+                return;
+            }
+
+            var json = resp[0].value;
+            this.search_result = json;
+
+        }.bind(this));
     }
 
     public closeAlert(i:number) : void 
@@ -179,11 +207,11 @@ export class AppComponent
         {
             // localcontent.addSong is destructive, so we create a copy
             var copy : Song = Song.fromJSON(song);
-            this.localcontent_element.addSong(copy, function(err?:any, sha1?:string)
+            this.localcontent_element.addSong(copy, function(err?:any, sha1?:string, magnet?:string)
             {
                 if (err) throw err;
                 this.alerts.push({msg: 'Added: "' + song.getTitle() + '" to local content!', type: 'info', closable: true, timeout: 3000});
-                added();
+                added(magnet);
             }.bind(this));
         }.bind(this));
 
@@ -197,10 +225,10 @@ export class AppComponent
             this.playlist_element.addSong(song);
         }.bind(this));
 
-        this.search_element.on('song-select', function(song : Song)
+        this.search_element.on('drop-down-select', function(value : any)
         {
-            //console.log(song);
-            this.search_result = song;
+            console.log(value);
+            this.search_result = value;
         }.bind(this));
     }
 }

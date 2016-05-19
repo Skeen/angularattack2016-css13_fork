@@ -37,7 +37,14 @@ export class Search extends events.EventEmitter
         {
             let p:Promise<string[]> = new Promise((resolve:Function) =>
             {
-                this.dht.get_raw(this.searchInput, function(err:any, value:string)
+                var search_string = this.searchInput;
+                /*
+                if(this.searchInput.endsWith(" (song)"))
+                {
+                    search_string = search_string.slice(0, -7);
+                }
+                */
+                this.dht.get_raw(search_string, function(err:any, value:string)
                 {
                     if(err) 
                     {
@@ -48,10 +55,14 @@ export class Search extends events.EventEmitter
                     var keys : any[] = [];
                     resp.forEach(function(obj:any)
                     {
-                        var value = JSON.parse(obj.value);
+                        if(obj.key.startsWith("sha1:"))
+                        {
+                            return;
+                        }
+                        var value = obj.value;
                         var key = obj.key + " (" + value.type + ")";
                         keys.push(key);
-                        this.map[key] = value.payload;
+                        this.map[key] = value;
                     }.bind(this));
 
                     return resolve(keys);
@@ -83,10 +94,6 @@ export class Search extends events.EventEmitter
 
     public typeaheadOnSelect(e:any):void
     {
-        /*
-        console.log(`Selected value: ${e.item}`);
-        console.log(this.map[e.item]);
-        */
-        this.emit('song-select', Song.fromJSON(this.map[e.item]));
+        this.emit('drop-down-select', this.map[e.item]);
     }
 }

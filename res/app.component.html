@@ -30,21 +30,64 @@
     </div>
 
     <div *ngIf="search_result">
-    <h2>Search result</h2>
-    <b>{{search_result.title}}</b> 
-    <ul>
-        <li>Album: {{search_result.albumName}}</li>
-        <li *ngFor="let artist of search_result.artistNames">
-            Artist: {{artist}}
-        </li>
-        <button type="button"
-                class="btn btn-primary"
-                (click)="download_song(search_result.magnet)"
-                >
-            <i class="fa fa-download" aria-hidden="true"></i>
-            Download Song
-        </button>
-    </ul>
+        <h2>Search result</h2>
+
+        <div [ngSwitch]="search_result.type">
+            <div *ngSwitchWhen="'song'">
+                <b>Song: {{search_result.payload.title}}</b> 
+                <ul>
+                    <li>Album: 
+                        <a href="javascript:void(0)" (click)="lookup(search_result.payload.album)">
+                           {{search_result.payload.albumName}}
+                        </a>
+                    </li>
+                    <li *ngFor="let artist of search_result.payload.artistNames; let i = index">
+                        Artist: 
+                        <a href="javascript:void(0)" (click)="lookup(search_result.payload.artists[i])">
+                            {{artist}}
+                        </a>
+                    </li>
+                    <button type="button"
+                            class="btn btn-primary"
+                            (click)="download_song(search_result.payload.magnet)"
+                            >
+                            <i class="fa fa-download" aria-hidden="true"></i>
+                            Download Song
+                    </button>
+                </ul>
+            </div>
+            <div *ngSwitchWhen="'album'">
+                <b>Album: {{search_result.payload.name}}</b> 
+                <ul>
+                    <li *ngFor="let song of search_result.payload.songTitles; let i = index">
+                        Song: 
+                        <a href="javascript:void(0)" (click)="lookup(search_result.payload.songs[i])">
+                            {{song}}
+                        </a>
+                    </li>
+                    <li *ngFor="let artist of search_result.payload.artistNames; let i = index">
+                        Artist: 
+                        <a href="javascript:void(0)" (click)="lookup(search_result.payload.artists[i])">
+                            {{artist}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div *ngSwitchWhen="'artist'">
+                <b>Artist: {{search_result.payload.name}}</b> 
+                <ul>
+                    <li *ngFor="let album of search_result.payload.albumNames; let i = index">
+                        Albums: 
+                        <a href="javascript:void(0)" (click)="lookup(search_result.payload.albums[i])">
+                            {{album}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div *ngSwitchDefault>
+                <b>Critical Error</b>
+            </div>
+        </div>
     </div>
 
     <h2>Playlist</h2>

@@ -63,11 +63,12 @@ export class LocalContent extends events.EventEmitter
         // New song, add it
         this.seed(song, function(magnet:string)
         {
+            // XXX: This callback never happens
             var old_magnet = song.getMagnet();
             if(old_magnet != undefined && old_magnet != magnet)
             {
                 if(callback)
-                    callback("MagnetURI mismatch!", undefined);
+                    callback("MagnetURI mismatch!", undefined, undefined);
                 else
                     alert("MagnetURI mismatch!");
                 return;
@@ -88,7 +89,7 @@ export class LocalContent extends events.EventEmitter
 
                 if(callback)
                 {
-                    callback(err, value);
+                    callback(err, value, magnet);
                 }
 
             }.bind(this));	
@@ -208,6 +209,9 @@ export class LocalContent extends events.EventEmitter
                 {
                     update_seed_values_torrent();
 				});
+
+                if(callback)
+                    callback(torrent.magnetURI);
 			},
 			function(name:string, info:string, magnet:string, blobURL:string)
             {
@@ -217,10 +221,7 @@ export class LocalContent extends events.EventEmitter
                 seed.info = info || "";
                 seed.blobURL = this.sanitizer.bypassSecurityTrustUrl(blobURL) || "";
 
-                if(callback)
-                    callback(magnet);
-
-			}.bind(this),
+            }.bind(this),
             update_seed_values
         );
 	}
