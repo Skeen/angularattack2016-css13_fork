@@ -38,7 +38,7 @@ module.exports = {
     sources: {
       statics: 'res/*.{html,js,css}',
       browserify: tmp + 'ts/' + 'main.js',
-      typescript: ['src/*.ts', 'typings/main.d.ts']
+      typescript: ['src/*.ts', 'typings/index.d.ts']
     },
     destinations: {
       dist: output,
