@@ -34,8 +34,7 @@
 
     <hr>
 
-	<div class="row" *ngFor="let seed of seeding;  let i=index"
-	  				(dblclick)="changeSong(i)">
+	<div class="row" *ngFor="let seed of seeding">
         <div class="col-md-1">
             <button type="button"
                     [disabled]="seed.song == undefined"

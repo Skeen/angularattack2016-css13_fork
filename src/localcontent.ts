@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, NgZone} from '@angular/core';
 import {Storage, Song, sha1, TorrentClient, HTTP_HashTable} from 'music-streamer-library';
 import {DomSanitizationService} from '@angular/platform-browser';
 
@@ -14,19 +14,21 @@ import events = require('events');
 })
 export class LocalContent extends events.EventEmitter
 {
-	private seeding:any[] = [];
+	public seeding:any[];
     private sanitizer:DomSanitizationService;
+    private zone:NgZone;
 
 	// For bad health maintainance
 	private static DHT = new HTTP_HashTable();
-	
 
     // Inject the DOM Sanitizer service
     // We need this to santize our 'magnet:' and 'blob:' URLs
-    constructor(sanitizer: DomSanitizationService)
+    constructor(sanitizer: DomSanitizationService, zone: NgZone)
 	{
 		super();
         this.sanitizer = sanitizer;
+        this.zone = zone;
+        this.seeding = new Array<any>();
 	}
 
     // This should only be called once!
@@ -65,7 +67,6 @@ export class LocalContent extends events.EventEmitter
         // New song, seed to generate magnet URI
         this.seed(song, function(magnet:string)
         {
-            // XXX: This callback never happens
             var old_magnet = song.getMagnet();
             if(old_magnet != undefined && old_magnet != magnet)
             {
@@ -77,7 +78,7 @@ export class LocalContent extends events.EventEmitter
             }
             song.setMagnet(magnet);
 
-			this.emit('badHealthUpdate', song);
+			//this.emit('badHealthUpdate', song);
 
             // Add to storage with magnet URI icnluded
             Storage.addSong(song, function(err?:any, value?:string)
@@ -175,7 +176,11 @@ export class LocalContent extends events.EventEmitter
             blobURL:"",
             file_blobURL: sanitized_file_blobURL
         };
-		this.seeding.push(seed);
+        // TODO: Figure out why force NgZone is required.
+        // http://stackoverflow.com/questions/31352397/how-to-update-view-after-change-in-angular2-after-google-event-listener-fired
+        this.zone.run(() => {
+            this.seeding.push(seed);
+        });
 
         function update_seed_values(upload_speed?:number, bytes_uploaded?:number, num_peers?:number)
         {
