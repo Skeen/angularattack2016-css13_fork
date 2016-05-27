@@ -62,7 +62,8 @@ export class AppComponent
 	private droparea_element : DropArea;
 
     // State variables
-    private dht : HashTable = new HTTP_HashTable("http://localhost:3000/");
+    private dht_address : string = document.location.hostname + ":3000";
+    private dht : HashTable = new HTTP_HashTable("http://" + this.dht_address + "/");
 
     // Output state
     private search_result : any;
